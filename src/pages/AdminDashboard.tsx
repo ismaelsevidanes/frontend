@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './dashboard.css';
 import Pagination from '../shared/components/Pagination';
 
@@ -6,16 +6,22 @@ function AdminDashboard() {
   const [data, setData] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedModel, setSelectedModel] = useState('');
-  const [totalPages, setTotalPages] = useState(1); // Estado para el total de páginas
+  const [totalPages, setTotalPages] = useState(1);
+
+  useEffect(() => {
+    if (selectedModel) {
+      fetchData(selectedModel, currentPage);
+    }
+  }, [selectedModel, currentPage]);
 
   const fetchData = async (model: string, page: number = 1) => {
     try {
-      const token = localStorage.getItem('token'); // Obtener el token del localStorage
+      const token = localStorage.getItem('token');
       const response = await fetch(
         `http://localhost:3000/api/${model}?page=${page}`,
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Incluir el token en la cabecera
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -23,32 +29,31 @@ function AdminDashboard() {
         throw new Error('Error al obtener los datos');
       }
       const result = await response.json();
-      setData(result.data || result); // Ajustar según la estructura de la respuesta
-      setTotalPages(result.totalPages || 10); // Actualizar el total de páginas
-      setSelectedModel(model);
-      setCurrentPage(page); // Reiniciar la página actual
+      setData(result.data || result);
+      setTotalPages(result.totalPages || 10);
     } catch (error) {
       console.error(error);
     }
   };
 
   const handleModelChange = (model: string) => {
-    fetchData(model, 1); // Reiniciar a la primera página al cambiar de modelo
+    setSelectedModel(model);
+    setCurrentPage(1);
   };
 
   return (
-    <div className="dashboard-container">
+    <main className="dashboard-container">
       <div className="container">
         <h1>Dashboard de Administrador</h1>
-        <nav>
+        <nav className="dashboard-nav">
           <button onClick={() => handleModelChange('users')}>Usuarios</button>
           <button onClick={() => handleModelChange('fields')}>Campos</button>
           <button onClick={() => handleModelChange('reservations')}>Reservas</button>
           <button onClick={() => handleModelChange('payments')}>Pagos</button>
         </nav>
-        {data.length > 0 && (
-          <>
-            <table>
+        {data.length > 0 ? (
+          <div className="table-container">
+            <table className="dashboard-table">
               <thead>
                 <tr>
                   {Object.keys(data[0]).map((key) => (
@@ -69,17 +74,16 @@ function AdminDashboard() {
             <div className="dashboard-pagination">
               <Pagination
                 currentPage={currentPage}
-                totalPages={totalPages} // Usar el total dinámico
-                onPageChange={(page) => {
-                  setCurrentPage(page);
-                  fetchData(selectedModel, page);
-                }}
+                totalPages={totalPages}
+                onPageChange={(page) => setCurrentPage(page)}
               />
             </div>
-          </>
+          </div>
+        ) : (
+          <p>Selecciona una categoría para ver los datos.</p>
         )}
       </div>
-    </div>
+    </main>
   );
 }
 

@@ -4,24 +4,28 @@ body {
   background-color: #f4f4f9;
 }
 
-/* Estilos específicos para el Dashboard */
 .dashboard-container {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
+  justify-content: flex-start;
+  align-items: center; /* Centrar el contenido horizontalmente */
+  height: 100vh; /* Ocupa toda la altura de la pantalla */
+  width: 100%; /* Ocupa todo el ancho disponible */
   padding: 2rem;
   background-color: #f4f4f9;
+  box-sizing: border-box; /* Incluye el padding en el tamaño total */
+  overflow-x: hidden; /* Eliminar el slider horizontal */
 }
 
 .dashboard-container .container {
-  width: 100%;
-  max-width: 1200px;
+  width: 90%; /* Aumentar el ancho del contenedor */
+  max-width: 100%; /* Limitar el ancho máximo a un tamaño más amplio */
+  margin: 0 auto; /* Centrar el contenedor */
   background: #fff;
   padding: 2rem;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden; /* Asegurar que no haya desbordamiento */
 }
 
 .dashboard-header {
@@ -39,6 +43,7 @@ body {
 .dashboard-nav {
   display: flex;
   gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 .dashboard-nav button {
@@ -55,17 +60,20 @@ body {
   background-color: #535bf2;
 }
 
+/* Ajustar el ancho de las columnas de la tabla automáticamente */
 .dashboard-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 1rem;
+  table-layout: auto; /* Permitir que las columnas se ajusten automáticamente según su contenido */
 }
 
 .dashboard-table th,
 .dashboard-table td {
   border: 1px solid #ddd;
-  padding: 0.75rem;
+  padding: 0.5rem; /* Reducir el padding general */
   text-align: left;
+  word-wrap: break-word; /* Permite que el texto largo se ajuste dentro de las celdas */
 }
 
 .dashboard-table th {
@@ -73,11 +81,20 @@ body {
   color: #333;
 }
 
+.dashboard-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.dashboard-table tr:hover {
+  background-color: #f1f1f1;
+}
+
 .dashboard-pagination {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  margin-top: 1rem;
+  margin-top: 1rem; /* Separación adecuada de la tabla */
+  width: 100%;
 }
 
 .dashboard-pagination button {
