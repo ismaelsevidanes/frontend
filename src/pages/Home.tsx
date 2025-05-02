@@ -8,7 +8,7 @@ function Home() {
   return (
     <div className="home-container">
       <header className="home-header">
-        <h1>Bienvenido a Dreamer Fields</h1>
+        <h1>Bienvenido a Pitch Dreamers</h1>
       </header>
       <div className="home-actions">
         <div className="home-action" onClick={() => navigate('/login')}>

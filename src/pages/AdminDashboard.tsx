@@ -24,7 +24,7 @@ function AdminDashboard() {
       }
       const result = await response.json();
       setData(result.data || result); // Ajustar según la estructura de la respuesta
-      setTotalPages(result.totalPages || 1); // Actualizar el total de páginas
+      setTotalPages(result.totalPages || 10); // Actualizar el total de páginas
       setSelectedModel(model);
       setCurrentPage(page); // Reiniciar la página actual
     } catch (error) {
