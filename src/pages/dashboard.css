@@ -89,6 +89,37 @@ body {
   background-color: #f1f1f1;
 }
 
+/* Cambiar el color del botón de eliminar a rojo */
+.dashboard-table button {
+  background-color: #646cff;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.dashboard-table button:hover {
+  background-color: #535bf2;
+}
+
+/* Asegurar que el botón de eliminar tenga un estilo único */
+.dashboard-table button.delete {
+  background-color: #ff4d4d !important; /* Forzar el color rojo */
+  color: #fff;
+  margin-left: 0.5rem; /* Añadir espacio entre los botones */
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.dashboard-table button.delete:hover {
+  background-color: #e60000 !important; /* Forzar el color rojo oscuro al pasar el mouse */
+}
+
 .dashboard-pagination {
   display: flex;
   justify-content: center;
