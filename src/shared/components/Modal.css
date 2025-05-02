@@ -15,21 +15,9 @@
 /* Modal content box */
 .container {
     background: #fff;
-    padding: 2rem;
+    padding: 3rem;
     border-radius: 12px;
     border: 2px solid #646cff;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    position: relative; /* Necesario para posicionar el botón de cerrar */
 }
 
-/* Ajustar la posición del botón de cerrar */
-.close-button {
-    position: absolute;
-    top: -10px; /* Ajustar según la posición deseada */
-    right: -10px; /* Ajustar según la posición deseada */
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: #646cff; /* Color del icono de cerrar */
-}
