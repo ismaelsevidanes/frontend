@@ -3,6 +3,7 @@ import './dashboard.css';
 import Pagination from '../shared/components/Pagination';
 import Modal from '../shared/components/Modal';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { formatDate } from '../shared/utils/dateUtils';
 
 function AdminDashboard() {
   const [data, setData] = useState<any[]>([]);
@@ -36,7 +37,19 @@ function AdminDashboard() {
         throw new Error('Error al obtener los datos');
       }
       const result = await response.json();
-      setData(result.data || result);
+
+      // Format specific date fields before setting data
+      const formattedData = result.data.map((item: any) => {
+        const formattedItem = { ...item };
+        ['paid_at', 'start_time', 'end_time'].forEach((key) => {
+          if (formattedItem[key]) {
+            formattedItem[key] = formatDate(formattedItem[key]);
+          }
+        });
+        return formattedItem;
+      });
+
+      setData(formattedData || result);
       setTotalPages(result.totalPages || 10);
     } catch (error) {
       console.error(error);
