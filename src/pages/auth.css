@@ -10,11 +10,12 @@ body {
   font-family: Arial, sans-serif;
 }
 
+/* Centrar el contenido en el medio de la página */
 .auth-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: auto;
+  height: 100vh; /* Ocupa toda la altura de la ventana */
   margin: 0;
   position: relative;
 }
