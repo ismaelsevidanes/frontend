@@ -1,54 +1,73 @@
-# React + TypeScript + Vite
+# Pitch Dreamers - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este es el frontend del proyecto Pitch Dreamers, desarrollado con React, TypeScript. A continuación, se describen los pasos de instalación, despliegue y estructura del proyecto.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Requisitos
 
-## Expanding the ESLint configuration
+- Node.js (versión más reciente recomendada)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- React
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+- Typescript
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Instalación
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+1. Clona este repositorio:
+   ```bash
+   git clone
+   ```
+2. Navega a la carpeta del proyecto:
+   ```bash
+   cd frontend
+   ```
+3. Instala las dependencias:
+   ```bash
+   npm install
+   ```
+4. Inicia el servidor de desarrollo:
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## Despliegue
+
+1. Compila el proyecto para producción:
+   ```bash
+   npm run build
+   ```
+2. Sirve los archivos estáticos generados en la carpeta `dist` con un servidor como `serve` o `nginx`.
+
+---
+
+## Estructura del Proyecto
+
+- **`src/features`**: Contiene las funcionalidades principales del proyecto.
+- **`src/shared`**: Componentes y utilidades reutilizables.
+- **`src/pages`**: Páginas principales de la aplicación.
+- **`src/assets`**: Recursos estáticos como imágenes y estilos globales.
+
+---
+
+## Funcionalidades Implementadas
+
+1. **Estructura inicial:**
+   - Configuración de React y TypeScript.
+   - Estructura basada en Screaming Architecture.
+2. **Componentes reutilizables:**
+   - Modal, paginación y otros componentes compartidos.
+3. **Estilos:**
+   - Uso de CSS modular para estilos específicos de componentes.
+4. **Páginas principales:**
+   - Inicio, registro, inicio de sesión y dashboard administrativo.
+
+---
+
+## Notas adicionales
+
+- Asegúrate de que el backend esté corriendo para probar la integración completa.
