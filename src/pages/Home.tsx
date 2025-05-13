@@ -1,15 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import Login from './Login';
-import Modal from '../shared/components/Modal';
 import './Home.css';
 
 function Home() {
   const navigate = useNavigate();
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
-
-  const openLogin = () => setIsLoginOpen(true);
-  const closeLogin = () => setIsLoginOpen(false);
 
   const goToRegister = () => navigate('/register');
 
@@ -19,17 +13,13 @@ function Home() {
         <h1>Bienvenido a Pitch Dreamers</h1>
       </header>
       <div className="home-actions">
-        <div className="home-action" onClick={openLogin}>
+        <div className="home-action" onClick={() => navigate('/login')}>
           <p>Iniciar Sesión</p>
         </div>
         <div className="home-action" onClick={goToRegister}>
           <p>Registrarse</p>
         </div>
       </div>
-
-      <Modal isOpen={isLoginOpen} onClose={closeLogin}>
-        <Login />
-      </Modal>
     </div>
   );
 }

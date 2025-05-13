@@ -158,7 +158,7 @@ function Register() {
             <div className="register-checkbox-row">
               <label className="register-checkbox">
                 <input type="checkbox" checked={staySignedIn} onChange={e => setStaySignedIn(e.target.checked)} />
-                <span>Seguir Conectado</span>
+                <span>Mantener Conectado</span>
               </label>
             </div>
             {success && (
