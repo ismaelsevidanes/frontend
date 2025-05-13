@@ -63,7 +63,13 @@ function Register() {
     <div className="register-root">
       <div className="register-grid">
         <div className="register-left">
-          <img src="/logo.webp" alt="Pitch Dreamers" className="register-img" />
+          <img
+            src="/logo.webp"
+            alt="Pitch Dreamers"
+            className="register-img"
+            style={{ cursor: 'pointer' }}
+            onClick={() => navigate('/')} // Redirige a la raíz al hacer clic
+          />
           <div className="register-benefits">
             <h4>Ventajas al Registrarte</h4>
             <ul>
@@ -100,9 +106,15 @@ function Register() {
                   aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                 >
                   {showPassword ? (
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 12C2.73 7.61 7.11 4.5 12 4.5C16.89 4.5 21.27 7.61 23 12C21.27 16.39 16.89 19.5 12 19.5C7.11 19.5 2.73 16.39 1 12Z" stroke="#888" strokeWidth="2"/><circle cx="12" cy="12" r="3.5" stroke="#888" strokeWidth="2"/></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M1 12C2.73 7.61 7.11 4.5 12 4.5C16.89 4.5 21.27 7.61 23 12C21.27 16.39 16.89 19.5 12 19.5C7.11 19.5 2.73 16.39 1 12Z" stroke="#888" strokeWidth="2"/>
+                      <circle cx="12" cy="12" r="3.5" stroke="#888" strokeWidth="2"/>
+                    </svg>
                   ) : (
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 12C2.73 7.61 7.11 4.5 12 4.5C16.89 4.5 21.27 7.61 23 12C21.27 16.39 16.89 19.5 12 19.5C7.11 19.5 2.73 16.39 1 12Z" stroke="#888" strokeWidth="2"/><path d="M4 4L20 20" stroke="#888" strokeWidth="2"/></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M1 12C2.73 7.61 7.11 4.5 12 4.5C16.89 4.5 21.27 7.61 23 12C21.27 16.39 16.89 19.5 12 19.5C7.11 19.5 2.73 16.39 1 12Z" stroke="#888" strokeWidth="2"/>
+                      <line x1="4" y1="4" x2="20" y2="20" stroke="#888" strokeWidth="2"/>
+                    </svg>
                   )}
                 </span>
               </div>
@@ -124,9 +136,15 @@ function Register() {
                   aria-label={showConfirmPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                 >
                   {showConfirmPassword ? (
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 12C2.73 7.61 7.11 4.5 12 4.5C16.89 4.5 21.27 7.61 23 12C21.27 16.39 16.89 19.5 12 19.5C7.11 19.5 2.73 16.39 1 12Z" stroke="#888" strokeWidth="2"/><circle cx="12" cy="12" r="3.5" stroke="#888" strokeWidth="2"/></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M1 12C2.73 7.61 7.11 4.5 12 4.5C16.89 4.5 21.27 7.61 23 12C21.27 16.39 16.89 19.5 12 19.5C7.11 19.5 2.73 16.39 1 12Z" stroke="#888" strokeWidth="2"/>
+                      <circle cx="12" cy="12" r="3.5" stroke="#888" strokeWidth="2"/>
+                    </svg>
                   ) : (
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 12C2.73 7.61 7.11 4.5 12 4.5C16.89 4.5 21.27 7.61 23 12C21.27 16.39 16.89 19.5 12 19.5C7.11 19.5 2.73 16.39 1 12Z" stroke="#888" strokeWidth="2"/><path d="M4 4L20 20" stroke="#888" strokeWidth="2"/></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M1 12C2.73 7.61 7.11 4.5 12 4.5C16.89 4.5 21.27 7.61 23 12C21.27 16.39 16.89 19.5 12 19.5C7.11 19.5 2.73 16.39 1 12Z" stroke="#888" strokeWidth="2"/>
+                      <line x1="4" y1="4" x2="20" y2="20" stroke="#888" strokeWidth="2"/>
+                    </svg>
                   )}
                 </span>
               </div>
