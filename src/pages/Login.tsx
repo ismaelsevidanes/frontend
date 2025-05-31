@@ -39,7 +39,7 @@ function Login() {
       if (data.role === 'admin') {
         navigate('/admin-dashboard');
       } else {
-        navigate('/user-dashboard');
+        navigate('/dashboard');
       }
     } catch (err) {
       setError('Error de conexión con el servidor');

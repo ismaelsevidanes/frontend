@@ -3,6 +3,7 @@ import Home from './pages/Home';
 import AdminDashboard from './pages/AdminDashboard';
 import Register from './pages/Register';
 import Login from './pages/Login';
+import UserDashboard from './pages/UserDashboard';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <Route path="/admin-dashboard" element={<AdminDashboard />} />
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/dashboard" element={<UserDashboard />} />
       {/* Puedes agregar más rutas aquí */}
     </Routes>
   );

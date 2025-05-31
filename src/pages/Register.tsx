@@ -49,7 +49,11 @@ function Register() {
       }
       setSuccess(true);
       // Redirigir siempre al dashboard de usuario
-      navigate('/user-dashboard');
+      if (data.role === 'admin') {
+        navigate('/admin-dashboard');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
       setError('Error de conexión con el servidor');
     }
