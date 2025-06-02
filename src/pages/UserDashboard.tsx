@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./userDashboardStyles.css";
+import Header from "../shared/components/Header";
+import "../shared/components/Header.css";
 
 interface Field {
   id: number;
@@ -98,39 +100,12 @@ const UserDashboard: React.FC = () => {
 
   return (
     <div className="user-dashboard-container">
-      <header className="user-dashboard-header">
-        <div className="user-dashboard-header-left" style={{ cursor: 'pointer' }} onClick={() => window.location.href = '/'}>
-          <img src="/logo.webp" alt="Logo" className="user-dashboard-logo" />
-          <span className="user-dashboard-title">PITCH DREAMERS</span>
-        </div>
-        <div className="user-dashboard-header-right">
-          <span
-            className="user-dashboard-user-icon"
-            title="Usuario"
-            style={{ cursor: 'pointer' }}
-            onClick={handleUserMenu}
-          >
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#232323" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="8" r="4" />
-              <path d="M21 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" />
-            </svg>
-          </span>
-          <span
-            className="user-dashboard-username"
-            style={{ cursor: 'pointer' }}
-            onClick={handleUserMenu}
-          >
-            {username}
-          </span>
-          {menuOpen && (
-            <div className="user-dashboard-menu" onMouseLeave={() => setMenuOpen(false)}>
-              <div className="user-dashboard-menu-arrow" />
-              <button className="user-dashboard-menu-item" onClick={() => window.location.href = '/perfil'}>Mi Cuenta</button>
-              <button className="user-dashboard-menu-item" onClick={handleLogout}>Cerrar Sesión</button>
-            </div>
-          )}
-        </div>
-      </header>
+      <Header
+        username={username}
+        onUserMenu={() => setMenuOpen((open) => !open)}
+        menuOpen={menuOpen}
+        handleLogout={handleLogout}
+      />
       <div className="dashboard-filters">
         <input
           type="text"
