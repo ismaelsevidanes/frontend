@@ -49,7 +49,7 @@ const Header: React.FC<HeaderProps> = ({ username, onUserMenu, menuOpen, handleL
       {menuOpen && (
         <div className="user-dashboard-menu" onMouseLeave={onUserMenu}>
           <div className="user-dashboard-menu-arrow" />
-          <button className="user-dashboard-menu-item" onClick={() => window.location.href = '/perfil'}>Mi Cuenta</button>
+          <button className="user-dashboard-menu-item" onClick={() => window.location.href = '/account'}>Mi Cuenta</button>
           <button className="user-dashboard-menu-item" onClick={handleLogout}>Cerrar Sesión</button>
         </div>
       )}

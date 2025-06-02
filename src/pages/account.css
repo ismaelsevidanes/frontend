@@ -1,0 +1,92 @@
+.account-container {
+  min-height: 100vh;
+  background: #fafaf6;
+}
+
+.account-main {
+  max-width: 480px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 32px 32px 24px 32px;
+}
+
+.account-info {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  font-size: 1.1rem;
+}
+
+.account-edit-btn {
+  margin-top: 18px;
+  padding: 8px 20px;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.account-edit-btn:hover {
+  background: #0056b3;
+}
+
+.account-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.account-form label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  color: #232323;
+}
+
+.account-form input {
+  margin-top: 6px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.account-form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.account-form-actions button {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  background: #007bff;
+  color: #fff;
+  transition: background 0.2s;
+}
+
+.account-form-actions button[type="button"] {
+  background: #aaa;
+}
+
+.account-form-actions button[type="button"]:hover {
+  background: #888;
+}
+
+.account-form-actions button[type="submit"]:hover {
+  background: #0056b3;
+}
+
+.account-message {
+  margin-top: 10px;
+  color: #007bff;
+  font-weight: 500;
+}

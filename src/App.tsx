@@ -4,6 +4,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import UserDashboard from './pages/UserDashboard';
+import Account from './pages/Account';
 
 function App() {
   return (
@@ -13,7 +14,7 @@ function App() {
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<Login />} />
       <Route path="/dashboard" element={<UserDashboard />} />
-      {/* Puedes agregar más rutas aquí */}
+      <Route path="/account" element={<Account />} />
     </Routes>
   );
 }
