@@ -18,6 +18,7 @@ const UserDashboard: React.FC = () => {
   const [price, setPrice] = useState("");
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState<string>("");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     // TODO: Replace with real API call
@@ -64,30 +65,70 @@ const UserDashboard: React.FC = () => {
     }
   }, []);
 
+  const handleUserMenu = () => setMenuOpen((open) => !open);
+  const handleLogout = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      window.location.href = "/login";
+      return;
+    }
+    try {
+      const response = await fetch("/auth/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+      // Si el logout es exitoso o el token ya está invalidado, borra el token y redirige
+      if (response.status === 200 || response.status === 401) {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+      } else {
+        // Si hay otro error, puedes mostrar un mensaje o forzar logout
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+      }
+    } catch (error) {
+      // En caso de error de red, borra el token y redirige
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    }
+  };
+
   return (
     <div className="user-dashboard-container">
       <header className="user-dashboard-header">
-        <div className="user-dashboard-header-left">
+        <div className="user-dashboard-header-left" style={{ cursor: 'pointer' }} onClick={() => window.location.href = '/'}>
           <img src="/logo.webp" alt="Logo" className="user-dashboard-logo" />
           <span className="user-dashboard-title">PITCH DREAMERS</span>
         </div>
         <div className="user-dashboard-header-right">
-          <span className="user-dashboard-user-icon" title="Usuario">
-            <svg
-              width="26"
-              height="26"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#232323"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
+          <span
+            className="user-dashboard-user-icon"
+            title="Usuario"
+            style={{ cursor: 'pointer' }}
+            onClick={handleUserMenu}
+          >
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#232323" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="8" r="4" />
               <path d="M21 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" />
             </svg>
           </span>
-          <span className="user-dashboard-username">{username}</span>
+          <span
+            className="user-dashboard-username"
+            style={{ cursor: 'pointer' }}
+            onClick={handleUserMenu}
+          >
+            {username}
+          </span>
+          {menuOpen && (
+            <div className="user-dashboard-menu" onMouseLeave={() => setMenuOpen(false)}>
+              <div className="user-dashboard-menu-arrow" />
+              <button className="user-dashboard-menu-item" onClick={() => window.location.href = '/perfil'}>Mi Cuenta</button>
+              <button className="user-dashboard-menu-item" onClick={handleLogout}>Cerrar Sesión</button>
+            </div>
+          )}
         </div>
       </header>
       <div className="dashboard-filters">
