@@ -107,16 +107,16 @@ const Account: React.FC = () => {
   if (loading) return <div>Cargando...</div>;
 
   return (
-    <div className="account-container">
+    <div className="account-root">
       <Header
-        username={user?.name || user?.email || "Usuario"}
+        username={user?.name || ''}
         onUserMenu={() => setMenuOpen((open) => !open)}
         menuOpen={menuOpen}
         handleLogout={handleLogout}
       />
       <main className="account-main">
         <div className="account-card">
-          <div className="account-title">Mi Cuenta</div>
+          <h2 className="account-title">Mi Cuenta</h2>
           {editMode ? (
             <form className="account-form" onSubmit={handleSave}>
               <label>
