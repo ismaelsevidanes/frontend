@@ -78,15 +78,15 @@ const Account: React.FC = () => {
     const token = localStorage.getItem("token");
     if (!token) return;
     const res = await fetch("/api/users/me", {
-      method: "PUT",
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        name: form.name,
-        email: form.email,
-        password: form.password || undefined,
+        ...(form.name && { name: form.name }),
+        ...(form.email && { email: form.email }),
+        ...(form.password && form.password.length > 0 ? { password: form.password } : {}),
       }),
     });
     if (res.ok) {
@@ -111,52 +111,54 @@ const Account: React.FC = () => {
         handleLogout={handleLogout}
       />
       <main className="account-main">
-        <h2>Mi Cuenta</h2>
-        {editMode ? (
-          <form className="account-form" onSubmit={handleSave}>
-            <label>
-              Nombre:
-              <input
-                type="text"
-                name="name"
-                value={form.name}
-                onChange={handleChange}
-                required
-              />
-            </label>
-            <label>
-              Email:
-              <input
-                type="email"
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-                required
-              />
-            </label>
-            <label>
-              Nueva contraseña:
-              <input
-                type="password"
-                name="password"
-                value={form.password}
-                onChange={handleChange}
-                placeholder="Dejar en blanco para no cambiar"
-              />
-            </label>
-            <div className="account-form-actions">
-              <button type="submit">Guardar</button>
-              <button type="button" onClick={() => setEditMode(false)}>Cancelar</button>
+        <div className="account-card">
+          <div className="account-title">Mi Cuenta</div>
+          {editMode ? (
+            <form className="account-form" onSubmit={handleSave}>
+              <label>
+                Nombre:
+                <input
+                  type="text"
+                  name="name"
+                  value={form.name}
+                  onChange={handleChange}
+                  required
+                />
+              </label>
+              <label>
+                Email:
+                <input
+                  type="email"
+                  name="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  required
+                />
+              </label>
+              <label>
+                Nueva contraseña:
+                <input
+                  type="password"
+                  name="password"
+                  value={form.password}
+                  onChange={handleChange}
+                  placeholder="Dejar en blanco para no cambiar"
+                />
+              </label>
+              <div className="account-form-actions">
+                <button type="submit">Guardar</button>
+                <button type="button" onClick={() => setEditMode(false)}>Cancelar</button>
+              </div>
+              {message && <div className="account-message">{message}</div>}
+            </form>
+          ) : (
+            <div className="account-info">
+              <div><b>Nombre:</b> {user?.name}</div>
+              <div><b>Email:</b> {user?.email}</div>
+              <button className="account-edit-btn" onClick={() => setEditMode(true)}>Editar datos</button>
             </div>
-            {message && <div className="account-message">{message}</div>}
-          </form>
-        ) : (
-          <div className="account-info">
-            <div><b>Nombre:</b> {user?.name}</div>
-            <div><b>Email:</b> {user?.email}</div>
-            <button className="account-edit-btn" onClick={() => setEditMode(true)}>Editar datos</button>
-          </div>
-        )}
+          )}
+        </div>
       </main>
     </div>
   );

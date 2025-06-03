@@ -29,7 +29,7 @@ const UserDashboard: React.FC = () => {
       .then((data) => {
         setFields(data);
         setFilteredFields(data);
-        setLoading(false);
+        setLoading(true);
       })
       .catch(() => setLoading(false));
   }, []);
