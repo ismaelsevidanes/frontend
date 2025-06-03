@@ -14,6 +14,8 @@ const Account: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", password: "" });
+  // Estado para mostrar/ocultar contraseña
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
 
@@ -137,13 +139,35 @@ const Account: React.FC = () => {
               </label>
               <label>
                 Nueva contraseña:
-                <input
-                  type="password"
-                  name="password"
-                  value={form.password}
-                  onChange={handleChange}
-                  placeholder="Dejar en blanco para no cambiar"
-                />
+                <div className="password-input-wrapper">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    value={form.password}
+                    onChange={handleChange}
+                    placeholder="Dejar en blanco para no cambiar"
+                    style={{ paddingRight: 40 }}
+                  />
+                  <span
+                    className="password-toggle-icon"
+                    onClick={() => setShowPassword((v) => !v)}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                  >
+                    {showPassword ? (
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1 12C2.73 7.61 7.11 4.5 12 4.5C16.89 4.5 21.27 7.61 23 12C21.27 16.39 16.89 19.5 12 19.5C7.11 19.5 2.73 16.39 1 12Z" stroke="#888" strokeWidth="2"/>
+                        <circle cx="12" cy="12" r="3.5" stroke="#888" strokeWidth="2"/>
+                      </svg>
+                    ) : (
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1 12C2.73 7.61 7.11 4.5 12 4.5C16.89 4.5 21.27 7.61 23 12C21.27 16.39 16.89 19.5 12 19.5C7.11 19.5 2.73 16.39 1 12Z" stroke="#888" strokeWidth="2"/>
+                        <line x1="4" y1="4" x2="20" y2="20" stroke="#888" strokeWidth="2"/>
+                      </svg>
+                    )}
+                  </span>
+                </div>
               </label>
               <div className="account-form-actions">
                 <button type="submit">Guardar</button>
@@ -155,6 +179,7 @@ const Account: React.FC = () => {
             <div className="account-info">
               <div><b>Nombre:</b> {user?.name}</div>
               <div><b>Email:</b> {user?.email}</div>
+              <div><b>Contraseña:</b> ********</div>
               <button className="account-edit-btn" onClick={() => setEditMode(true)}>Editar datos</button>
             </div>
           )}
