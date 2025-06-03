@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Header from "../shared/components/Header";
+import Footer from "../shared/components/Footer";
 import "../shared/components/Header.css";
+import "../shared/components/Footer.css";
 import "./account.css";
 
 interface User {
@@ -185,6 +187,7 @@ const Account: React.FC = () => {
           )}
         </div>
       </main>
+      <Footer />
     </div>
   );
 };

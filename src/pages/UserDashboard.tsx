@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import "./userDashboardStyles.css";
 import Header from "../shared/components/Header";
 import "../shared/components/Header.css";
+import Footer from "../shared/components/Footer";
+import "../shared/components/Footer.css";
 
 interface Field {
   id: number;
@@ -154,6 +156,7 @@ const UserDashboard: React.FC = () => {
           </div>
         )}
       </main>
+      <Footer />
     </div>
   );
 };
