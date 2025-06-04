@@ -7,6 +7,7 @@ import UserDashboard from './pages/UserDashboard';
 import Account from './pages/Account';
 import Contacto from './pages/Contacto';
 import FAQ from './pages/FAQ';
+import Reserva from './pages/Reserva';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
       <Route path="/account" element={<Account />} />
       <Route path="/contacto" element={<Contacto />} />
       <Route path="/faq" element={<FAQ />} />
+      <Route path="/reserva" element={<Reserva />} />
     </Routes>
   );
 }

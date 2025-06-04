@@ -7,6 +7,7 @@ import "../shared/components/Footer.css";
 import { FaFilter } from "react-icons/fa";
 import FieldCard from "../shared/components/FieldCard";
 import FieldFilters from "../shared/components/FieldFilters";
+import { useNavigate } from "react-router-dom";
 
 // Carrusel simple para imágenes
 const FieldImageCarousel: React.FC<{ images: string[] }> = ({ images }) => {
@@ -69,7 +70,7 @@ const UserDashboard: React.FC = () => {
   const [username, setUsername] = useState<string>("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
-
+  const navigate = useNavigate();
   // Nueva función para construir la query de filtros y pedir al backend
   const fetchFields = async (showLoading = false) => {
     if (showLoading) setLoading(true);
@@ -160,43 +161,45 @@ const UserDashboard: React.FC = () => {
   };
 
   return (
-    <div className="user-dashboard-container">
+    <div className="dashboard-layout">
       <Header
         username={username}
         onUserMenu={() => setMenuOpen((open) => !open)}
         menuOpen={menuOpen}
         handleLogout={handleLogout}
       />
-      <FieldFilters
-        search={search}
-        setSearch={setSearch}
-        location={location}
-        setLocation={setLocation}
-        price={price}
-        setPrice={setPrice}
-        type={type}
-        setType={setType}
-        leastReserved={leastReserved}
-        setLeastReserved={setLeastReserved}
-        filtersOpen={filtersOpen}
-        setFiltersOpen={setFiltersOpen}
-      />
       <main className="dashboard-main">
-        {loading ? (
-          <div className="dashboard-loading">Cargando campos...</div>
-        ) : filteredFields.length === 0 ? (
-          <div className="dashboard-empty">No se encontraron campos.</div>
-        ) : (
-          <div className="fields-grid">
-            {filteredFields.map((field) => (
-              <FieldCard
-                key={field.id}
-                {...field}
-                onReserve={() => {/* lógica de reserva aquí*/}}
-              />
-            ))}
-          </div>
-        )}
+        <div className="user-dashboard-container">
+          <FieldFilters
+            search={search}
+            setSearch={setSearch}
+            location={location}
+            setLocation={setLocation}
+            price={price}
+            setPrice={setPrice}
+            type={type}
+            setType={setType}
+            leastReserved={leastReserved}
+            setLeastReserved={setLeastReserved}
+            filtersOpen={filtersOpen}
+            setFiltersOpen={setFiltersOpen}
+          />
+          {loading ? (
+            <div className="dashboard-loading">Cargando campos...</div>
+          ) : filteredFields.length === 0 ? (
+            <div className="dashboard-empty">No se encontraron campos.</div>
+          ) : (
+            <div className="fields-grid">
+              {filteredFields.map((field) => (
+                <FieldCard
+                  key={field.id}
+                  {...field}
+                  onReserve={() => {/* lógica de reserva aquí*/}}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </main>
       <Footer />
     </div>
