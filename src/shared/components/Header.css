@@ -92,6 +92,20 @@
   background: #f5f5f5;
 }
 
+/* Sticky header styles */
+.sticky-header {
+  position: sticky;
+  top: 32px; /* Espacio igual al margin-top original */
+  left: 0;
+  right: 0;
+  z-index: 100;
+  margin-top: 32px !important;
+  margin-bottom: 40px !important;
+  box-shadow: 0 2px 12px 0 rgba(30,30,30,0.10);
+  border-radius: 24px;
+  background: #fff;
+}
+
 /* Responsive styles */
 @media (max-width: 600px) {
   .user-dashboard-header {
@@ -120,5 +134,13 @@
     justify-content: center;
     width: 100%;
     gap: 8px;
+  }
+
+  .sticky-header {
+    top: 16px;
+    margin-top: 16px !important;
+    margin-bottom: 24px !important;
+    border-radius: 16px;
+    padding: 10px 8px;
   }
 }

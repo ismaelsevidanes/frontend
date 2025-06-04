@@ -9,7 +9,7 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ username, onUserMenu, menuOpen, handleLogout }) => (
-  <header className="user-dashboard-header">
+  <header className="user-dashboard-header sticky-header">
     <div
       className="user-dashboard-header-left"
       style={{ cursor: 'pointer' }}
@@ -47,10 +47,15 @@ const Header: React.FC<HeaderProps> = ({ username, onUserMenu, menuOpen, handleL
         <span className="user-dashboard-username">{username}</span>
       </span>
       {menuOpen && (
-        <div className="user-dashboard-menu" onMouseLeave={onUserMenu}>
+        <div
+          className="user-dashboard-menu"
+          onMouseLeave={window.innerWidth > 700 ? onUserMenu : undefined}
+          tabIndex={0}
+          onBlur={onUserMenu}
+        >
           <div className="user-dashboard-menu-arrow" />
-          <button className="user-dashboard-menu-item" onClick={() => window.location.href = '/account'}>Mi Cuenta</button>
-          <button className="user-dashboard-menu-item" onClick={handleLogout}>Cerrar Sesión</button>
+          <button className="user-dashboard-menu-item" onClick={() => { onUserMenu(); window.location.href = '/account'; }}>Mi Cuenta</button>
+          <button className="user-dashboard-menu-item" onClick={() => { onUserMenu(); handleLogout(); }}>Cerrar Sesión</button>
         </div>
       )}
     </div>
