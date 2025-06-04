@@ -21,11 +21,31 @@
 /* Estilos para las cards de campos en el dashboard */
 .fields-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(370px, 1fr));
+  justify-content: center; /* Centra el grid siempre */
+  align-items: start;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); /* Más ancho */
   gap: 40px;
   margin: 40px auto 0 auto;
-  width: 92%;
-  max-width: 1400px;
+  width: 96%;
+  max-width: 1800px; /* Mejor para tablets grandes */
+}
+
+.fields-grid:only-child, .fields-grid:has(> *:only-child) {
+  justify-items: center;
+}
+
+.fields-grid > *:only-child {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (max-width: 1200px) {
+  .fields-grid {
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    width: 98vw;
+    max-width: 1200px;
+    gap: 28px;
+  }
 }
 
 @media (max-width: 900px) {
@@ -34,6 +54,17 @@
     gap: 22px;
     width: 98vw;
     margin: 18px auto 0 auto;
+    max-width: 98vw;
+  }
+}
+
+@media (max-width: 600px) {
+  .fields-grid {
+    grid-template-columns: 1fr;
+    width: 100vw;
+    gap: 12px;
+    margin: 8px auto 0 auto;
+    max-width: 100vw;
   }
 }
 

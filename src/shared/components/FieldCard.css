@@ -10,7 +10,8 @@
   transition: box-shadow 0.2s, transform 0.2s;
   min-height: 600px;
   position: relative;
-
+  width: 100%;      /* Ocupa todo el ancho disponible */
+  max-width: 600px;
 }
 .field-card:hover {
   box-shadow: 0 8px 32px 0 rgba(30,30,30,0.18);
@@ -20,7 +21,7 @@
 .field-carousel {
   position: relative;
   width: 100%;
-  height: 340px;
+  height: 400px; /* Imagen más alta */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -30,7 +31,7 @@
 }
 .field-image {
   width: 100%;
-  height: 340px;
+  height: 400px; /* Imagen más alta */
   object-fit: cover;
   border-radius: 18px 18px 0 0;
 }
@@ -154,11 +155,13 @@
 }
 @media (max-width: 900px) {
   .field-card {
-    min-width: 0;
     max-width: 98vw;
     width: 100vw;
     margin-left: 0;
     margin-right: 0;
     box-sizing: border-box;
+  }
+  .field-carousel, .field-image {
+    height: 220px; /* Ajusta la altura en móvil */
   }
 }

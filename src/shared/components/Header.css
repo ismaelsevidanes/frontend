@@ -1,7 +1,7 @@
 /* Haz que el header se comporte igual que en dashboard */
 .user-dashboard-header {
   width: 90vw;
-  max-width: 55%; /* Ajusta el ancho máximo según sea necesario para todas las vistas */
+  max-width: 70%; /* Ajusta el ancho máximo según sea necesario para todas las vistas */
   margin: 32px auto 40px auto;
   display: flex;
   justify-content: space-between;
