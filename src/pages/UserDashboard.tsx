@@ -111,7 +111,7 @@ const UserDashboard: React.FC = () => {
 
   // Cambiar página: cargar los campos de la página seleccionada
   useEffect(() => {
-    if (currentPage !== 1) fetchFields(false, currentPage);
+    fetchFields(false, currentPage);
     // eslint-disable-next-line
   }, [currentPage]);
 
