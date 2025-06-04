@@ -7,6 +7,7 @@ import "../shared/components/Footer.css";
 import { FaFilter } from "react-icons/fa";
 import FieldCard from "../shared/components/FieldCard";
 import FieldFilters from "../shared/components/FieldFilters";
+import Pagination from "../shared/components/Pagination"; // Asegúrate de que la ruta sea correcta
 import { useNavigate } from "react-router-dom";
 
 // Carrusel simple para imágenes
@@ -70,9 +71,11 @@ const UserDashboard: React.FC = () => {
   const [username, setUsername] = useState<string>("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
   // Nueva función para construir la query de filtros y pedir al backend
-  const fetchFields = async (showLoading = false) => {
+  const fetchFields = async (showLoading = false, page = currentPage) => {
     if (showLoading) setLoading(true);
     const params = new URLSearchParams();
     if (search) params.append("search", search);
@@ -80,16 +83,18 @@ const UserDashboard: React.FC = () => {
     if (price) params.append("max_price", price);
     if (type) params.append("type", type);
     if (leastReserved) params.append("least_reserved", "true");
+    params.append("page", page.toString());
     const res = await fetch(`/api/fields?${params.toString()}`);
     const data = await res.json();
     setFields(data.data || []);
     setFilteredFields(data.data || []);
+    setTotalPages(data.totalPages || 1);
     if (showLoading) setLoading(false);
   };
 
   // Solo mostrar loading en la primera carga
   useEffect(() => {
-    fetchFields(true);
+    fetchFields(true, currentPage);
     // eslint-disable-next-line
   }, []);
 
@@ -104,13 +109,21 @@ const UserDashboard: React.FC = () => {
     }, deps);
   }
 
-  // Sustituye useEffect por useDebouncedEffect para filtros automáticos
+  // Cambiar página: cargar los campos de la página seleccionada
+  useEffect(() => {
+    if (currentPage !== 1) fetchFields(false, currentPage);
+    // eslint-disable-next-line
+  }, [currentPage]);
+
+  // Resetear a página 1 al cambiar filtros
   useDebouncedEffect(() => {
-    fetchFields();
+    setCurrentPage(1);
+    fetchFields(false, 1);
   }, [search, location, price], 300);
 
   useEffect(() => {
-    fetchFields();
+    setCurrentPage(1);
+    fetchFields(false, 1);
     // eslint-disable-next-line
   }, [type, leastReserved]);
 
@@ -189,15 +202,24 @@ const UserDashboard: React.FC = () => {
           ) : filteredFields.length === 0 ? (
             <div className="dashboard-empty">No se encontraron campos.</div>
           ) : (
-            <div className="fields-grid">
-              {filteredFields.map((field) => (
-                <FieldCard
-                  key={field.id}
-                  {...field}
-                  onReserve={() => {/* lógica de reserva aquí*/}}
+            <>
+              <div className="fields-grid">
+                {filteredFields.map((field) => (
+                  <FieldCard
+                    key={field.id}
+                    {...field}
+                    onReserve={() => {/* lógica de reserva aquí*/}}
+                  />
+                ))}
+              </div>
+              <div style={{ margin: '2rem 0', display: 'flex', justifyContent: 'center' }}>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
                 />
-              ))}
-            </div>
+              </div>
+            </>
           )}
         </div>
       </main>

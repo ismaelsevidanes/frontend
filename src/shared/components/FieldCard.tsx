@@ -60,7 +60,18 @@ const FieldCard: React.FC<FieldCardProps> = ({
   <div className="field-card">
     <FieldImageCarousel images={images} />
     <div className="field-info">
-      <h3>{name}</h3>
+      <div className="field-card-title">
+        {name.includes('(') && name.includes(')')
+          ? (
+            <>
+              {name.substring(0, name.indexOf('(')).trim()}
+              <div className="field-card-club">
+                {name.substring(name.indexOf('(') + 1, name.indexOf(')'))}
+              </div>
+            </>
+          )
+          : name}
+      </div>
       <p className="field-location">{location}</p>
       <p className="field-description">{description}</p>
       <div className="field-type">Tipo: <b>{type === 'futbol7' ? 'Fútbol 7' : 'Fútbol 11'}</b></div>

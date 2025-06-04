@@ -153,6 +153,12 @@
 .reserve-btn:hover {
   background: #1565c0;
 }
+.field-card-club {
+  font-weight: 400;
+  font-size: 1rem;
+  color: #444;
+  margin-top: 2px;
+}
 @media (max-width: 900px) {
   .field-card {
     max-width: 98vw;
