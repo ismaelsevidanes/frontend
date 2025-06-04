@@ -208,7 +208,7 @@ const UserDashboard: React.FC = () => {
                   <FieldCard
                     key={field.id}
                     {...field}
-                    onReserve={() => {/* lógica de reserva aquí*/}}
+                    onReserve={() => navigate(`/reserva/${field.id}`)}
                   />
                 ))}
               </div>

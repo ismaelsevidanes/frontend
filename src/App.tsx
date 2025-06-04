@@ -8,6 +8,7 @@ import Account from './pages/Account';
 import Contacto from './pages/Contacto';
 import FAQ from './pages/FAQ';
 import Reserva from './pages/Reserva';
+import FieldDetail from './pages/FieldDetail';
 
 function App() {
   return (
@@ -20,7 +21,7 @@ function App() {
       <Route path="/account" element={<Account />} />
       <Route path="/contacto" element={<Contacto />} />
       <Route path="/faq" element={<FAQ />} />
-      <Route path="/reserva" element={<Reserva />} />
+      <Route path="/reserva/:id" element={<FieldDetail />} />
     </Routes>
   );
 }
