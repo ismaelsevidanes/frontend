@@ -5,6 +5,8 @@ import "../shared/components/Header.css";
 import Footer from "../shared/components/Footer";
 import "../shared/components/Footer.css";
 import { FaFilter } from "react-icons/fa";
+import FieldCard from "../shared/components/FieldCard";
+import FieldFilters from "../shared/components/FieldFilters";
 
 // Carrusel simple para imágenes
 const FieldImageCarousel: React.FC<{ images: string[] }> = ({ images }) => {
@@ -165,60 +167,20 @@ const UserDashboard: React.FC = () => {
         menuOpen={menuOpen}
         handleLogout={handleLogout}
       />
-      <div className="dashboard-filters-wrapper">
-        <button className="dashboard-filters-toggle" onClick={() => setFiltersOpen((open) => !open)} aria-label="Mostrar/ocultar filtros">
-          <FaFilter style={{ marginRight: 8, fontSize: 20 }} />
-          <span>Filtros</span>
-        </button>
-        {filtersOpen && (
-          <div className="dashboard-filters">
-            <div className="dashboard-filters-row">
-              <input
-                type="text"
-                placeholder="Buscar campo..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                aria-label="Buscar campo por nombre"
-              />
-              <input
-                type="text"
-                placeholder="Ubicación"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                aria-label="Filtrar por ubicación"
-              />
-              <input
-                type="number"
-                placeholder="Precio máximo (€)"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                min={0}
-                aria-label="Filtrar por precio máximo"
-              />
-              <select
-                value={type}
-                onChange={(e) => setType(e.target.value)}
-                aria-label="Filtrar por tipo de campo"
-              >
-                <option value="">Tipo de campo</option>
-                <option value="futbol7">Fútbol 7</option>
-                <option value="futbol11">Fútbol 11</option>
-              </select>
-            </div>
-            <div className="dashboard-checkbox-row">
-              <label className="least-reserved-label">
-                <input
-                  type="checkbox"
-                  checked={leastReserved}
-                  onChange={(e) => setLeastReserved(e.target.checked)}
-                  style={{ accentColor: '#003366', marginRight: 8 }}
-                />
-                Ordenar por menos reservas disponibles
-              </label>
-            </div>
-          </div>
-        )}
-      </div>
+      <FieldFilters
+        search={search}
+        setSearch={setSearch}
+        location={location}
+        setLocation={setLocation}
+        price={price}
+        setPrice={setPrice}
+        type={type}
+        setType={setType}
+        leastReserved={leastReserved}
+        setLeastReserved={setLeastReserved}
+        filtersOpen={filtersOpen}
+        setFiltersOpen={setFiltersOpen}
+      />
       <main className="dashboard-main">
         {loading ? (
           <div className="dashboard-loading">Cargando campos...</div>
@@ -227,22 +189,11 @@ const UserDashboard: React.FC = () => {
         ) : (
           <div className="fields-grid">
             {filteredFields.map((field) => (
-              <div className="field-card" key={field.id}>
-                <FieldImageCarousel images={["/logo.webp", "/logo.webp", "/logo.webp", "/logo.webp"]} />
-                <div className="field-info">
-                  <h3>{field.name}</h3>
-                  <p className="field-location">{field.location}</p>
-                  <p className="field-description">{field.description}</p>
-                  <div className="field-type">Tipo: <b>{field.type === 'futbol7' ? 'Fútbol 7' : 'Fútbol 11'}</b></div>
-                  <div className="field-spots">
-                    Plazas disponibles: <b>{typeof field.available_spots === 'number' ? field.available_spots : field.max_reservations}</b> / {field.max_reservations}
-                  </div>
-                  <div className="field-bottom">
-                    <span className="field-price">{field.price_per_hour} €/h</span>
-                    <button className="reserve-btn">Reservar</button>
-                  </div>
-                </div>
-              </div>
+              <FieldCard
+                key={field.id}
+                {...field}
+                onReserve={() => {/* lógica de reserva aquí*/}}
+              />
             ))}
           </div>
         )}
