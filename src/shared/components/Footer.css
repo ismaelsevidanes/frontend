@@ -1,6 +1,9 @@
 /* Footer global para todas las vistas */
 .global-footer {
-  width: 100%;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  border-radius: 0;
+  box-shadow: none;
   background: #fff;
   color: #232323;
   box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
@@ -123,4 +126,18 @@
   .footer-social {
     font-size: 2.4rem;
   }
+}
+
+.dashboard-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #fafaf3;
+}
+.dashboard-main {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
 }
