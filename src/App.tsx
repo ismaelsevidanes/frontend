@@ -7,7 +7,6 @@ import UserDashboard from './pages/UserDashboard';
 import Account from './pages/Account';
 import Contacto from './pages/Contacto';
 import FAQ from './pages/FAQ';
-import Reserva from './pages/Reserva';
 import FieldDetail from './pages/FieldDetail';
 
 function App() {

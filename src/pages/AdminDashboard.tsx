@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import './dashboard.css';
 import Pagination from '../shared/components/Pagination';
 import Modal from '../shared/components/Modal';
@@ -149,7 +149,7 @@ function AdminDashboard() {
                 {data.map((item, index) => (
                   <tr key={index}>
                     {Object.values(item).map((value, i) => (
-                      <td key={i}>{value}</td>
+                      <td key={i}>{String(value)}</td>
                     ))}
                     <td>
                       <button onClick={() => handleOpenModal(item)}>Editar</button>

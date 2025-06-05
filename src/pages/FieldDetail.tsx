@@ -172,8 +172,6 @@ const FieldDetail: React.FC = () => {
 
   // Carrusel local (no globalizado)
   const images = field.images && field.images.length > 0 ? field.images : ["/logo.webp"];
-  const next = () => setCarouselIndex((i) => (i + 1) % images.length);
-  const prev = () => setCarouselIndex((i) => (i - 1 + images.length) % images.length);
 
   return (
     <div className="dashboard-layout">

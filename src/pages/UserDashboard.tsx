@@ -4,47 +4,10 @@ import Header from "../shared/components/Header";
 import "../shared/components/Header.css";
 import Footer from "../shared/components/Footer";
 import "../shared/components/Footer.css";
-import { FaFilter } from "react-icons/fa";
 import FieldCard from "../shared/components/FieldCard";
 import FieldFilters from "../shared/components/FieldFilters";
 import Pagination from "../shared/components/Pagination"; // Asegúrate de que la ruta sea correcta
 import { useNavigate } from "react-router-dom";
-
-// Carrusel simple para imágenes
-const FieldImageCarousel: React.FC<{ images: string[] }> = ({ images }) => {
-  const [index, setIndex] = useState(0);
-
-  // Cambio automático cada 20 segundos
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex((i) => (i + 1) % images.length);
-    }, 20000);
-    return () => clearInterval(interval);
-  }, [images.length]);
-
-  const next = () => setIndex((i) => (i + 1) % images.length);
-  const prev = () => setIndex((i) => (i - 1 + images.length) % images.length);
-
-  // Cambiar imagen solo con dots
-  if (images.length === 0) return null;
-  return (
-    <div className="field-carousel">
-      <img src={images[index]} alt="Campo" className="field-image" />
-      <button className="carousel-btn left" onClick={prev} aria-label="Anterior">&#8592;</button>
-      <button className="carousel-btn right" onClick={next} aria-label="Siguiente">&#8594;</button>
-      <div className="carousel-dots">
-        {images.map((_, i) => (
-          <span
-            key={i}
-            className={i === index ? "dot active" : "dot"}
-            onClick={() => setIndex(i)}
-            style={{ cursor: 'pointer' }}
-          ></span>
-        ))}
-      </div>
-    </div>
-  );
-};
 
 interface Field {
   id: number;
@@ -60,7 +23,6 @@ interface Field {
 }
 
 const UserDashboard: React.FC = () => {
-  const [fields, setFields] = useState<Field[]>([]);
   const [filteredFields, setFilteredFields] = useState<Field[]>([]);
   const [search, setSearch] = useState("");
   const [location, setLocation] = useState("");
@@ -86,7 +48,6 @@ const UserDashboard: React.FC = () => {
     params.append("page", page.toString());
     const res = await fetch(`/api/fields?${params.toString()}`);
     const data = await res.json();
-    setFields(data.data || []);
     setFilteredFields(data.data || []);
     setTotalPages(data.totalPages || 1);
     if (showLoading) setLoading(false);
@@ -100,11 +61,13 @@ const UserDashboard: React.FC = () => {
 
   // Para los filtros, no mostrar loading, así no hay parpadeo
   function useDebouncedEffect(effect: () => void, deps: any[], delay: number) {
-    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     useEffect(() => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       timeoutRef.current = setTimeout(effect, delay);
-      return () => timeoutRef.current && clearTimeout(timeoutRef.current);
+      return () => {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      };
       // eslint-disable-next-line
     }, deps);
   }
@@ -142,7 +105,6 @@ const UserDashboard: React.FC = () => {
     }
   }, []);
 
-  const handleUserMenu = () => setMenuOpen((open) => !open);
   const handleLogout = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
