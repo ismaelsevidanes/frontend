@@ -26,7 +26,7 @@ function AdminDashboard() {
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(
-        `http://localhost:3000/api/${model}?page=${page}`,
+        `/api/${model}?page=${page}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -77,7 +77,7 @@ function AdminDashboard() {
       try {
         const token = localStorage.getItem('token');
         const response = await fetch(
-          `http://localhost:3000/api/${selectedModel}/${id}`,
+          `/api/${selectedModel}/${id}`,
           {
             method: 'DELETE',
             headers: {
@@ -100,8 +100,8 @@ function AdminDashboard() {
       const token = localStorage.getItem('token');
       const method = isEditing ? 'PUT' : 'POST';
       const url = isEditing
-        ? `http://localhost:3000/api/${selectedModel}/${modalData.id}`
-        : `http://localhost:3000/api/${selectedModel}`;
+        ? `/api/${selectedModel}/${modalData.id}`
+        : `/api/${selectedModel}`;
 
       const response = await fetch(url, {
         method,
