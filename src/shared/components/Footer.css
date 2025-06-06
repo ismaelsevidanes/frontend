@@ -1,0 +1,143 @@
+/* Footer global para todas las vistas */
+.global-footer {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  border-radius: 0;
+  box-shadow: none;
+  background: #fff;
+  color: #232323;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
+  padding: 0 0 0.5rem 0;
+  margin-top: 48px;
+}
+
+.footer-top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem 1rem 1rem;
+  gap: 2rem;
+}
+
+.footer-brand-section {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-left: 0;
+  min-width: 340px;
+  gap: 32px;
+}
+.footer-logo {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 0;
+  background: #fff;
+}
+.footer-brand {
+  font-size: 2.3rem;
+  font-weight: bold;
+  letter-spacing: 2px;
+  color: #003366;
+}
+
+.footer-links-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.footer-link {
+  color: #003366;
+  text-decoration: none;
+  font-size: 1.1rem;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.footer-link:hover {
+  color: #5C9563;
+  text-decoration: underline;
+}
+.footer-icon {
+  display: flex;
+  align-items: center;
+}
+
+.footer-social-section {
+  display: flex;
+  gap: 56px;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
+}
+.footer-social {
+  display: flex;
+  align-items: center;
+  color: #003366;
+  font-size: 3.8rem;
+  transition: color 0.2s;
+  text-decoration: none;
+}
+.footer-social:hover {
+  color: #5C9563;
+}
+
+.footer-social-right {
+  margin-left: auto;
+}
+
+.footer-divider {
+  border: none;
+  border-top: 3px solid #003366;
+  margin: 0.5rem auto 1rem auto;
+  width: 90%;
+}
+
+.footer-bottom {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #232323;
+  padding-bottom: 0.5rem;
+}
+
+@media (max-width: 900px) {
+  .footer-content {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem 0.5rem 1rem 0.5rem;
+  }
+  .footer-brand-section {
+    min-width: unset;
+    margin-left: 0;
+    gap: 18px;
+  }
+  .footer-social-section {
+    justify-content: center;
+    gap: 28px;
+  }
+  .footer-social {
+    font-size: 2.4rem;
+  }
+}
+
+.dashboard-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #fafaf3;
+}
+.dashboard-main {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+}

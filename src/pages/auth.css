@@ -6,8 +6,12 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f7f7f2; /* Cambiar el color de fondo del body */
+  background: #F7F7F2 !important; /* Cambiar el color de fondo del body */
   font-family: Arial, sans-serif;
+}
+
+body {
+  background: #F7F7F2;
 }
 
 /* Centrar el contenido en el medio de la página */
@@ -69,4 +73,312 @@ body {
 
 .auth-container button:hover {
   background-color: #535bf2;
+}
+
+.register-root {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F7F7F2;
+}
+
+.register-grid {
+  display: flex;
+  gap: 120px; /* Más espacio entre columnas */
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.register-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 60px;
+}
+
+.register-img {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  margin-bottom: 48px;
+}
+
+.register-benefits {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 36px 36px;
+  margin-top: 32px;
+  min-width: 380px;
+  font-size: 1.1rem;
+}
+
+.register-right {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+  padding: 56px 48px 48px 48px;
+  min-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.register-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-bottom: 24px;
+}
+
+.register-title {
+  text-align: center;
+  margin-bottom: 18px;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #222F36;
+}
+
+.register-form label {
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.register-form input[type="email"],
+.register-form input[type="text"],
+.register-form input[type="password"] {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fff !important;
+  color: #111 !important;
+  margin-top: 6px;
+  margin-bottom: 12px;
+  font-size: 1.08rem;
+  box-sizing: border-box;
+}
+
+.register-form input[type="email"]::placeholder,
+.register-form input[type="text"]::placeholder,
+.register-form input[type="password"]::placeholder {
+  color: #888;
+  opacity: 1;
+}
+
+/* For Chrome/Edge/Opera autofill */
+.register-form input:-webkit-autofill {
+  -webkit-text-fill-color: #111 !important;
+  box-shadow: 0 0 0 1000px #fff inset !important;
+}
+
+/* For Firefox autofill */
+.register-form input:-moz-autofill {
+  color: #111 !important;
+  background: #fff !important;
+}
+
+.register-password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.register-password-wrapper input {
+  width: 100%;
+  padding-right: 38px;
+  /* Asegura espacio para el icono */
+}
+
+.register-password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: #888;
+  z-index: 2;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.register-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0;
+}
+
+.register-checkbox input[type="checkbox"] {
+  margin-right: 8px;
+  accent-color: #222F36;
+  width: 20px;
+  height: 20px;
+}
+
+.register-checkbox span {
+  font-size: 1.08rem;
+  color: #222F36;
+}
+
+.register-btn {
+  background: linear-gradient(90deg, #FF7E2D 0%, #FF4B2B 100%);
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  padding: 16px 0;
+  font-size: 1.18rem;
+  margin-top: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.register-btn:hover {
+  background: linear-gradient(90deg, #FF4B2B 0%, #FF7E2D 100%);
+}
+
+.register-divider {
+  text-align: center;
+  color: #aaa;
+  margin: 18px 0 0 0;
+  font-size: 1.08rem;
+  position: relative;
+}
+
+.register-divider:before, .register-divider:after {
+  content: '';
+  display: inline-block;
+  width: 40%;
+  height: 1px;
+  background: #e0e0e0;
+  vertical-align: middle;
+  margin: 0 8px;
+}
+
+.register-social {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 0;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.08rem;
+  font-weight: 500;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.register-social.google {
+  background: #f5f5f5;
+  color: #222F36;
+}
+
+.register-social.instagram {
+  background: linear-gradient(90deg, #fd5949 0%, #d6249f 100%);
+  color: #fff;
+}
+
+.register-social-icon {
+  width: 26px;
+  height: 26px;
+}
+
+.register-success {
+  color: #2ecc40;
+  background: #eafbe7;
+  border-radius: 8px;
+  padding: 10px 0;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.register-error {
+  color: #e74c3c;
+  background: #fdecea;
+  border-radius: 8px;
+  padding: 10px 0;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.register-legal {
+  font-size: 1rem;
+  color: #888;
+  margin: 12px 0 0 0;
+  text-align: left;
+}
+
+@media (max-width: 900px) {
+  .register-grid {
+    grid-template-columns: 1fr;
+    min-height: unset;
+    max-width: 500px;
+    gap: 24px;
+  }
+  .register-left {
+    display: none;
+  }
+  .register-right {
+    margin: 0;
+    min-width: unset;
+  }
+}
+
+.login-root {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F7F7F2;
+}
+
+.login-center-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.login-logo-img {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  margin-bottom: 32px;
+  margin-top: 32px;
+}
+
+.login-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+  padding: 48px 40px 40px 40px;
+  min-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-bottom: 0;
+}
+
+.login-title {
+  text-align: center;
+  margin-bottom: 18px;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #222F36;
 }

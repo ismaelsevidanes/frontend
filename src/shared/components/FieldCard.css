@@ -1,0 +1,173 @@
+/* FieldCard global styles, reutilizables para cualquier dashboard */
+.field-card {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px 0 rgba(30,30,30,0.10);
+  padding: 0 0 18px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: box-shadow 0.2s, transform 0.2s;
+  min-height: 600px;
+  position: relative;
+  width: 100%;      /* Ocupa todo el ancho disponible */
+  max-width: 600px;
+}
+.field-card:hover {
+  box-shadow: 0 8px 32px 0 rgba(30,30,30,0.18);
+  transform: translateY(-4px) scale(1.02);
+}
+
+.field-carousel {
+  position: relative;
+  width: 100%;
+  height: 400px; /* Imagen más alta */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eaeaea;
+  border-radius: 18px 18px 0 0;
+  overflow: hidden;
+}
+.field-image {
+  width: 100%;
+  height: 400px; /* Imagen más alta */
+  object-fit: cover;
+  border-radius: 18px 18px 0 0;
+}
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.85);
+  border: none;
+  color: #1e88e5;
+  font-size: 1.25rem;
+  border-radius: 6px;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  z-index: 2;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+  box-shadow: 0 2px 8px 0 rgba(30,30,30,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.85;
+  border: 1.5px solid #e0e0e0;
+}
+.carousel-btn.left {
+  left: 2px;
+}
+.carousel-btn.right {
+  right: 2px;
+}
+.carousel-btn:hover {
+  background: #e3f0fc;
+  color: #1565c0;
+  opacity: 1;
+  border-color: #b3d3f7;
+}
+.carousel-dots {
+  position: absolute;
+  bottom: 18px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  z-index: 2;
+}
+.dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #bbb;
+  display: inline-block;
+  transition: background 0.18s;
+  cursor: pointer;
+}
+.dot.active {
+  background: #1e88e5;
+}
+
+.field-info {
+  width: 90%;
+  margin: 0 auto;
+  padding-top: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.field-info h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 6px 0;
+  color: #1e293b;
+}
+.field-location {
+  font-size: 1.05rem;
+  color: #1e88e5;
+  margin-bottom: 2px;
+}
+.field-description {
+  font-size: 1rem;
+  color: #232323;
+  margin-bottom: 8px;
+}
+.field-type {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 2px;
+}
+.field-spots {
+  font-size: 1.08rem;
+  color: #1e88e5;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.field-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 10px;
+}
+.field-price {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #232323;
+}
+.reserve-btn {
+  background: #1e88e5;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s, box-shadow 0.18s;
+  box-shadow: 0 2px 8px 0 rgba(30,30,30,0.08);
+}
+.reserve-btn:hover {
+  background: #1565c0;
+}
+.field-card-club {
+  font-weight: 400;
+  font-size: 1rem;
+  color: #444;
+  margin-top: 2px;
+}
+@media (max-width: 900px) {
+  .field-card {
+    max-width: 98vw;
+    width: 100vw;
+    margin-left: 0;
+    margin-right: 0;
+    box-sizing: border-box;
+  }
+  .field-carousel, .field-image {
+    height: 220px; /* Ajusta la altura en móvil */
+  }
+}

@@ -1,0 +1,121 @@
+/* Estilos exclusivos para el dashboard de usuario (UserDashboard) */
+.user-dashboard-container {
+  min-height: 100vh;
+  width: 100vw;
+  background: #f7f7f2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.user-dashboard-title {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #232323;
+  letter-spacing: 1.5px;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* Estilos para las cards de campos en el dashboard */
+.fields-grid {
+  display: grid;
+  justify-content: center; /* Centra el grid siempre */
+  align-items: start;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); /* Más ancho */
+  gap: 40px;
+  margin: 40px auto 0 auto;
+  width: 96%;
+  max-width: 1800px; /* Mejor para tablets grandes */
+}
+
+.fields-grid:only-child, .fields-grid:has(> *:only-child) {
+  justify-items: center;
+}
+
+.fields-grid > *:only-child {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (max-width: 1200px) {
+  .fields-grid {
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    width: 98vw;
+    max-width: 1200px;
+    gap: 28px;
+  }
+}
+
+@media (max-width: 900px) {
+  .fields-grid {
+    grid-template-columns: 1fr;
+    gap: 22px;
+    width: 98vw;
+    margin: 18px auto 0 auto;
+    max-width: 98vw;
+  }
+}
+
+@media (max-width: 600px) {
+  .fields-grid {
+    grid-template-columns: 1fr;
+    width: 100vw;
+    gap: 12px;
+    margin: 8px auto 0 auto;
+    max-width: 100vw;
+  }
+}
+
+/* Checkbox personalizado para las opciones de reserva */
+.dashboard-checkbox-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 0;
+  margin-top: 4px;
+}
+.least-reserved-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.98rem;
+  color: #003366;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  background: none;
+  border-radius: 8px;
+  padding: 0;
+  transition: background 0.18s;
+  box-shadow: none;
+}
+.least-reserved-label:hover {
+  background: #e3f0fc;
+}
+.least-reserved-label input[type="checkbox"] {
+  accent-color: #003366;
+  width: 15px;
+  height: 15px;
+  margin-right: 4px;
+  margin-left: 0;
+  box-shadow: none;
+  border: none;
+  background: none;
+  vertical-align: middle;
+  position: relative;
+  top: 1px;
+}
+.least-reserved-label .checkbox-icon {
+  color: #003366;
+  font-size: 1.2rem;
+}
+.least-reserved-label .checkbox-text {
+  color: #003366;
+  font-weight: 500;
+  font-size: 1rem;
+  margin-left: 2px;
+}
+
