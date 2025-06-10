@@ -79,7 +79,7 @@ const FieldCard: React.FC<FieldCardProps> = ({
         Plazas disponibles: <b>{typeof available_spots === 'number' ? available_spots : max_reservations}</b> / {max_reservations}
       </div>
       <div className="field-bottom">
-        <span className="field-price">{price_per_hour} €/h</span>
+        <span className="field-price">{price_per_hour} €</span>
         {!hideReserveButton && <button className="reserve-btn" onClick={onReserve}>Reservar</button>}
       </div>
     </div>

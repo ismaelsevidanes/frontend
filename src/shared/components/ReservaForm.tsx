@@ -125,11 +125,14 @@ const ReservaForm: React.FC<ReservaFormProps> = ({ field, nextWeekendDates, onSu
   // Si no hay plazas, bloquear input y botones
   const reservasDisabled = maxReservas === 0;
 
+  // Calcular el precio total dinámico
+  const totalPrice = reservasDisabled ? 0 : (numUsers * field.price_per_hour);
+
   return (
     <form onSubmit={handleSubmit} className="reserva-form" aria-label="Formulario de reserva">
       <div className="reserva-pricebox">
         <span className="reserva-price">
-          {Number(field.price_per_hour).toFixed(2)}<span className="reserva-price-eur">€</span>
+          {totalPrice.toFixed(2)}<span className="reserva-price-eur">€</span>
         </span>
       </div>
       <div>
