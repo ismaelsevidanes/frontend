@@ -118,6 +118,13 @@ const ReservaForm: React.FC<ReservaFormProps> = ({ field, nextWeekendDates, onSu
     }
   };
 
+  // Calcular el máximo de reservas permitidas según plazas disponibles
+  const maxReservas = (typeof (field as any).available_spots === 'number' && (field as any).available_spots >= 1)
+    ? (field as any).available_spots
+    : 0;
+  // Si no hay plazas, bloquear input y botones
+  const reservasDisabled = maxReservas === 0;
+
   return (
     <form onSubmit={handleSubmit} className="reserva-form" aria-label="Formulario de reserva">
       <div className="reserva-pricebox">
@@ -169,30 +176,31 @@ const ReservaForm: React.FC<ReservaFormProps> = ({ field, nextWeekendDates, onSu
       <div className="reserva-users">
         <label htmlFor="numUsers" className="reserva-label" style={{ marginBottom: 0 }}>Número de reservas</label>
         <div className="reserva-users-inputbox">
-          <button type="button" className="reserva-users-btn" aria-label="Disminuir" onClick={() => setNumUsers(Math.max(1, numUsers - 1))} tabIndex={0} disabled={numUsers <= 1}>-</button>
+          <button type="button" className="reserva-users-btn" aria-label="Disminuir" onClick={() => setNumUsers(Math.max(1, numUsers - 1))} tabIndex={0} disabled={numUsers <= 1 || reservasDisabled}>-</button>
           <input
             id="numUsers"
             type="number"
             min={1}
-            max={field.max_reservations}
-            value={numUsers}
+            max={maxReservas}
+            value={reservasDisabled ? '' : numUsers}
             onChange={e => {
               let value = Number(e.target.value);
               if (isNaN(value)) value = 1;
-              value = Math.max(1, Math.min(field.max_reservations, value));
+              value = Math.max(1, Math.min(maxReservas, value));
               setNumUsers(value);
             }}
             required
             aria-label="Cantidad de reservas"
             className="reserva-users-input"
+            disabled={reservasDisabled}
           />
-          <button type="button" className="reserva-users-btn" aria-label="Aumentar" onClick={() => setNumUsers(Math.min(field.max_reservations, numUsers + 1))} tabIndex={0} disabled={numUsers >= field.max_reservations}>+</button>
+          <button type="button" className="reserva-users-btn" aria-label="Aumentar" onClick={() => setNumUsers(Math.min(maxReservas, numUsers + 1))} tabIndex={0} disabled={numUsers >= maxReservas || reservasDisabled}>+</button>
         </div>
-        <span className="reserva-users-max">Máximo {field.max_reservations}</span>
+        <span className="reserva-users-max">{reservasDisabled ? 'No hay plazas disponibles' : `Máximo ${maxReservas}`}</span>
       </div>
       {formError && <div className="reserva-error">{formError}</div>}
       {success && <div className="reserva-success">{success}</div>}
-      <button type="submit" className="reserva-btn" disabled={loading}>{loading ? "Reservando..." : "Confirmar Reserva"}</button>
+      <button type="submit" className="reserva-btn" disabled={loading || reservasDisabled}>{loading ? "Reservando..." : "Confirmar Reserva"}</button>
     </form>
   );
 };
