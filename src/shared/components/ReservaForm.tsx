@@ -41,6 +41,15 @@ const ReservaForm: React.FC<ReservaFormProps> = ({ field, nextWeekendDates, onSu
     setSlot(slotId);
   };
 
+  const getSlotTimes = (date: string, slotId: number) => {
+    const slot = SLOTS.find(s => s.id === slotId);
+    if (!slot) return { start: '', end: '' };
+    // date: 'YYYY-MM-DD', slot.start: 'HH:mm', slot.end: 'HH:mm'
+    const start = `${date}T${slot.start}:00`;
+    const end = `${date}T${slot.end}:00`;
+    return { start, end };
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError("");
@@ -56,8 +65,26 @@ const ReservaForm: React.FC<ReservaFormProps> = ({ field, nextWeekendDates, onSu
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
+      if (!token) {
+        localStorage.setItem("redirectAfterLogin", window.location.pathname + window.location.search);
+        window.location.href = "/login";
+        return;
+      }
+      // Obtener el id del usuario logueado desde el token JWT
+      let userId = null;
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        userId = payload.id;
+      } catch {
+        setFormError("Token inválido. Vuelve a iniciar sesión.");
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+        return;
+      }
       const slotObj = SLOTS.find(s => s.id === Number(slot));
       if (!slotObj) throw new Error("Slot no válido");
+      const { start, end } = getSlotTimes(date, Number(slot));
+      // Agrupar reservas: crear una sola reserva con N plazas para ese usuario
       const res = await fetch("/api/reservations", {
         method: "POST",
         headers: {
@@ -69,9 +96,14 @@ const ReservaForm: React.FC<ReservaFormProps> = ({ field, nextWeekendDates, onSu
           date,
           slot: Number(slot),
           total_price: field.price_per_hour,
-          user_ids: Array(numUsers).fill(1), // Simula usuarios (ajusta según tu lógica real)
+          user_ids: Array(numUsers).fill(userId),
         }),
       });
+      if (res.status === 401 || res.status === 403) {
+        localStorage.setItem("redirectAfterLogin", window.location.pathname + window.location.search);
+        window.location.href = "/login";
+        return;
+      }
       if (res.ok) {
         setSuccess("Reserva realizada correctamente");
         if (onSuccess) setTimeout(onSuccess, 1200);
@@ -144,7 +176,12 @@ const ReservaForm: React.FC<ReservaFormProps> = ({ field, nextWeekendDates, onSu
             min={1}
             max={field.max_reservations}
             value={numUsers}
-            onChange={e => setNumUsers(Number(e.target.value))}
+            onChange={e => {
+              let value = Number(e.target.value);
+              if (isNaN(value)) value = 1;
+              value = Math.max(1, Math.min(field.max_reservations, value));
+              setNumUsers(value);
+            }}
             required
             aria-label="Cantidad de reservas"
             className="reserva-users-input"

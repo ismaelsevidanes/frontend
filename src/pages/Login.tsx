@@ -36,6 +36,13 @@ function Login() {
       }
       localStorage.setItem('token', data.token);
       setSuccess(true);
+      // Redirección automática tras login
+      const redirect = localStorage.getItem('redirectAfterLogin');
+      if (redirect) {
+        localStorage.removeItem('redirectAfterLogin');
+        window.location.href = redirect;
+        return;
+      }
       if (data.role === 'admin') {
         navigate('/admin-dashboard');
       } else {
