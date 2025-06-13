@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import dayjs from "dayjs";
 import "./ReservaForm.css";
+import { authFetch } from "../utils/authFetch";
 
 interface Field {
   id: number;
@@ -64,11 +65,6 @@ const ReservaForm: React.FC<ReservaFormProps> = ({ field, nextWeekendDates, onSu
     }
     setLoading(true);
     try {
-      if (!token) {
-        localStorage.setItem("redirectAfterLogin", window.location.pathname + window.location.search);
-        window.location.href = "/login";
-        return;
-      }
       // Guardar los datos de la reserva temporalmente en el estado global o sessionStorage
       const reservaTemp = {
         field_id: field.id,

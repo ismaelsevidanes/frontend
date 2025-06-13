@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Header from "../shared/components/Header";
 import Footer from "../shared/components/Footer";
+import { authFetch } from "../shared/utils/authFetch";
 import "../shared/components/Header.css";
 import "../shared/components/Footer.css";
 import "./account.css";
@@ -27,13 +28,8 @@ const Account: React.FC = () => {
       window.location.href = "/login";
       return;
     }
-    fetch("/api/users/me", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("No autorizado");
-        return res.json();
-      })
+    authFetch("/api/users/me")
+      .then((res) => res.json())
       .then((data) => {
         setUser(data);
         setForm({ name: data.name, email: data.email, password: "" });
@@ -52,11 +48,10 @@ const Account: React.FC = () => {
       return;
     }
     try {
-      const response = await fetch("/auth/logout", {
+      const response = await authFetch("/auth/logout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
         },
       });
       if (response.status === 200 || response.status === 401) {
@@ -81,11 +76,10 @@ const Account: React.FC = () => {
     setMessage("");
     const token = localStorage.getItem("token");
     if (!token) return;
-    const res = await fetch("/api/users/me", {
+    const res = await authFetch("/api/users/me", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         ...(form.name && { name: form.name }),

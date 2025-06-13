@@ -8,6 +8,7 @@ import FieldCard from "../shared/components/FieldCard";
 import FieldFilters from "../shared/components/FieldFilters";
 import Pagination from "../shared/components/Pagination"; // Asegúrate de que la ruta sea correcta
 import { useNavigate } from "react-router-dom";
+import { authFetch } from "../shared/utils/authFetch";
 
 interface Field {
   id: number;
@@ -46,7 +47,7 @@ const UserDashboard: React.FC = () => {
     if (type) params.append("type", type);
     if (leastReserved) params.append("least_reserved", "true");
     params.append("page", page.toString());
-    const res = await fetch(`/api/fields?${params.toString()}`);
+    const res = await authFetch(`/api/fields?${params.toString()}`);
     const data = await res.json();
     setFilteredFields(data.data || []);
     setTotalPages(data.totalPages || 1);
@@ -112,11 +113,10 @@ const UserDashboard: React.FC = () => {
       return;
     }
     try {
-      const response = await fetch("/auth/logout", {
+      const response = await authFetch("/auth/logout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
         },
       });
       // Si el logout es exitoso o el token ya está invalidado, borra el token y redirige
@@ -124,12 +124,10 @@ const UserDashboard: React.FC = () => {
         localStorage.removeItem("token");
         window.location.href = "/login";
       } else {
-        // Si hay otro error, puedes mostrar un mensaje o forzar logout
         localStorage.removeItem("token");
         window.location.href = "/login";
       }
     } catch (error) {
-      // En caso de error de red, borra el token y redirige
       localStorage.removeItem("token");
       window.location.href = "/login";
     }

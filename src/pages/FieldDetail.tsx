@@ -7,6 +7,7 @@ import "../shared/components/Header.css";
 import "../shared/components/Footer.css";
 import GoogleMapEmbed from "../shared/components/GoogleMapEmbed";
 import ReservaForm from "../shared/components/ReservaForm";
+import { authFetch } from "../shared/utils/authFetch";
 
 interface Field {
   id: number;
@@ -36,7 +37,7 @@ const FieldDetail: React.FC = () => {
   useEffect(() => {
     if (!id) return;
     setLoading(true);
-    fetch(`/api/fields/${id}`)
+    authFetch(`/api/fields/${id}`)
       .then(res => res.json())
       .then(data => {
         if (data && (data.data || data.id)) {
@@ -77,11 +78,10 @@ const FieldDetail: React.FC = () => {
       return;
     }
     try {
-      const response = await fetch("/auth/logout", {
+      const response = await authFetch("/auth/logout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
         },
       });
       if (response.status === 200 || response.status === 401) {

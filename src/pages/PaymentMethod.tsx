@@ -4,6 +4,7 @@ import { FaTrashAlt } from "react-icons/fa";
 import Header from "../shared/components/Header";
 import Footer from "../shared/components/Footer";
 import Modal from "../shared/components/Modal";
+import { authFetch } from "../shared/utils/authFetch";
 import "../shared/components/Header.css";
 import "../shared/components/Footer.css";
 import "./PaymentMethod.css";
@@ -36,17 +37,7 @@ const PaymentMethod: React.FC = () => {
 
   useEffect(() => {
     // obtener usuario del token
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        setUsername(payload.name || payload.email || "Usuario");
-      } catch {}
-    }
-    // obtener tarjeta guardada
-    fetch("/api/payments/method", {
-      headers: { "Authorization": `Bearer ${token}` }
-    })
+    authFetch("/api/payments/method")
       .then(r => r.ok ? r.json() : null)
       .then(data => {
         if (data && data.last4) setSavedCard({ last4: data.last4 });
@@ -84,19 +75,12 @@ const PaymentMethod: React.FC = () => {
     }
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        localStorage.setItem("redirectAfterLogin", window.location.pathname + window.location.search);
-        window.location.href = "/login";
-        return;
-      }
       if (selectedOption === "card") {
         // Guardar método de pago
-        const res = await fetch("/api/payments/method", {
+        const res = await authFetch("/api/payments/method", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
           },
           body: JSON.stringify({
             cardNumber: cardData.number,
@@ -119,11 +103,10 @@ const PaymentMethod: React.FC = () => {
         total_price: reservaTemp.total_price,
         user_ids: Array(reservaTemp.numUsers).fill(null),
       };
-      const reservaRes = await fetch("/api/reservations", {
+      const reservaRes = await authFetch("/api/reservations", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify(reservaPayload),
       });
@@ -140,6 +123,18 @@ const PaymentMethod: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Eliminar método de pago guardado
+  const handleDeleteCard = async () => {
+    setDeleteLoading(true);
+    await authFetch("/api/payments/method", {
+      method: "DELETE",
+    });
+    setDeleteLoading(false);
+    setShowDeleteModal(false);
+    setSavedCard(null);
+    setSelectedOption("");
   };
 
   if (!reservaTemp) return null;
@@ -291,18 +286,7 @@ const PaymentMethod: React.FC = () => {
             <div className="delete-modal-actions">
               <button
                 className="delete-modal-confirm"
-                onClick={async () => {
-                  setDeleteLoading(true);
-                  const token = localStorage.getItem("token");
-                  await fetch("/api/payments/method", {
-                    method: "DELETE",
-                    headers: { "Authorization": `Bearer ${token}` },
-                  });
-                  setDeleteLoading(false);
-                  setShowDeleteModal(false);
-                  setSavedCard(null);
-                  setSelectedOption("");
-                }}
+                onClick={handleDeleteCard}
                 disabled={deleteLoading}
               >Eliminar</button>
               <button className="delete-modal-cancel" onClick={() => setShowDeleteModal(false)} disabled={deleteLoading}>Cancelar</button>

@@ -4,6 +4,7 @@ import Pagination from '../shared/components/Pagination';
 import Modal from '../shared/components/Modal';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { formatDate } from '../shared/utils/dateUtils';
+import { authFetch } from '../shared/utils/authFetch';
 
 function AdminDashboard() {
   const [data, setData] = useState<any[]>([]);
@@ -24,14 +25,8 @@ function AdminDashboard() {
 
   const fetchData = async (model: string, page: number = 1) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(
-        `/api/${model}?page=${page}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await authFetch(
+        `/api/${model}?page=${page}`
       );
       if (!response.ok) {
         throw new Error('Error al obtener los datos');
@@ -75,14 +70,10 @@ function AdminDashboard() {
   const handleDelete = async (id: number) => {
     if (window.confirm('¿Estás seguro de que deseas eliminar este registro?')) {
       try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(
+        const response = await authFetch(
           `/api/${selectedModel}/${id}`,
           {
             method: 'DELETE',
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
           }
         );
         if (!response.ok) {
@@ -97,25 +88,20 @@ function AdminDashboard() {
 
   const handleSubmit = async (formData: any) => {
     try {
-      const token = localStorage.getItem('token');
       const method = isEditing ? 'PUT' : 'POST';
       const url = isEditing
         ? `/api/${selectedModel}/${modalData.id}`
         : `/api/${selectedModel}`;
-
-      const response = await fetch(url, {
+      const response = await authFetch(url, {
         method,
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
       });
-
       if (!response.ok) {
         throw new Error('Error al guardar los datos');
       }
-
       fetchData(selectedModel, currentPage);
       handleCloseModal();
     } catch (error) {
