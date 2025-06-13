@@ -64,55 +64,22 @@ const ReservaForm: React.FC<ReservaFormProps> = ({ field, nextWeekendDates, onSu
     }
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
       if (!token) {
         localStorage.setItem("redirectAfterLogin", window.location.pathname + window.location.search);
         window.location.href = "/login";
         return;
       }
-      // Obtener el id del usuario logueado desde el token JWT
-      let userId = null;
-      try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        userId = payload.id;
-      } catch {
-        setFormError("Token inválido. Vuelve a iniciar sesión.");
-        localStorage.removeItem("token");
-        window.location.href = "/login";
-        return;
-      }
-      const slotObj = SLOTS.find(s => s.id === Number(slot));
-      if (!slotObj) throw new Error("Slot no válido");
-      const { start, end } = getSlotTimes(date, Number(slot));
-      // Agrupar reservas: crear una sola reserva con N plazas para ese usuario
-      const res = await fetch("/api/reservations", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          field_id: field.id,
-          date,
-          slot: Number(slot),
-          total_price: field.price_per_hour,
-          user_ids: Array(numUsers).fill(userId),
-        }),
-      });
-      if (res.status === 401 || res.status === 403) {
-        localStorage.setItem("redirectAfterLogin", window.location.pathname + window.location.search);
-        window.location.href = "/login";
-        return;
-      }
-      if (res.ok) {
-        setSuccess("Reserva realizada correctamente");
-        if (onSuccess) setTimeout(onSuccess, 1200);
-      } else {
-        const data = await res.json();
-        setFormError(data.message || "Error al realizar la reserva");
-      }
-    } catch (err) {
-      setFormError("Error de red");
+      // Guardar los datos de la reserva temporalmente en el estado global o sessionStorage
+      const reservaTemp = {
+        field_id: field.id,
+        date,
+        slot: Number(slot),
+        total_price: field.price_per_hour,
+        numUsers,
+      };
+      sessionStorage.setItem("reservaTemp", JSON.stringify(reservaTemp));
+      // Redirigir a la vista de método de pago
+      window.location.href = "/pago";
     } finally {
       setLoading(false);
     }
