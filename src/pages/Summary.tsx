@@ -4,6 +4,7 @@ import Header from "../shared/components/Header";
 import Footer from "../shared/components/Footer";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import CancelReservationButton from "../shared/components/CancelReservationButton";
 import "./Summary.css";
 
 const Summary: React.FC = () => {
@@ -27,17 +28,26 @@ const Summary: React.FC = () => {
     if (!ticketData) {
       navigate("/dashboard", { replace: true });
     }
-    // Obtener nombre usuario
+    // Obtener nombre usuario y controlar expiración del token
     const token = localStorage.getItem("token");
     if (token) {
       try {
         const payload = JSON.parse(atob(token.split(".")[1]));
+        // Si el token tiene expiración y está caducado, redirige
+        if (payload.exp && Date.now() / 1000 > payload.exp) {
+          localStorage.removeItem("token");
+          window.location.href = "/login";
+          return;
+        }
         setUsername(payload.name || payload.email || "Usuario");
       } catch {
-        setUsername("Usuario");
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+        return;
       }
     } else {
-      setUsername("Usuario");
+      window.location.href = "/login";
+      return;
     }
   }, [location.state, navigate]);
 
@@ -93,11 +103,6 @@ const Summary: React.FC = () => {
     ticketElement.classList.remove("export-pdf");
   };
 
-  // Función para cancelar la reserva (placeholder, lógica a implementar después)
-  const handleCancel = () => {
-    alert("Funcionalidad de cancelar reserva próximamente.");
-  };
-
   if (!ticket) return null;
 
   return (
@@ -150,7 +155,15 @@ const Summary: React.FC = () => {
         </div>
         <div className="summary-ticket-footer festival-ticket-footer ticket-footer-outside">
           <button className="summary-ticket-btn download" onClick={handleDownload}>Descargar ticket</button>
-          <button className="summary-ticket-btn cancel" onClick={handleCancel}>Cancelar reserva</button>
+          {ticket && (ticket.id || ticket.reservationId) && (ticket.created_at || ticket.createdAt) && (ticket.creator_id || ticket.user_id) && (
+            <CancelReservationButton
+              reservationId={ticket.id || ticket.reservationId}
+              createdAt={ticket.created_at || ticket.createdAt}
+              creatorId={ticket.creator_id || ticket.user_id}
+              onCancelSuccess={() => navigate("/dashboard")}
+              className="summary-ticket-btn cancel"
+            />
+          )}
         </div>
       </main>
       <Footer />
