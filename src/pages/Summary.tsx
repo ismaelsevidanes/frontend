@@ -5,6 +5,7 @@ import Footer from "../shared/components/Footer";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import CancelReservationButton from "../shared/components/CancelReservationButton";
+import CheckoutStepper from "../shared/components/CheckoutStepper";
 import "./Summary.css";
 
 const Summary: React.FC = () => {
@@ -112,7 +113,9 @@ const Summary: React.FC = () => {
         onUserMenu={handleUserMenu}
         menuOpen={menuOpen}
         handleLogout={handleLogout}
-      />
+      >
+        <CheckoutStepper step={2} />
+      </Header>
       <main className="dashboard-main summary-main-center">
         <div className="summary-ticket-container print-ticket">
           <div id="festival-ticket" className="summary-ticket festival-ticket">

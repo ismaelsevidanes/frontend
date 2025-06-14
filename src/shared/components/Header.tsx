@@ -6,9 +6,10 @@ interface HeaderProps {
   onUserMenu: () => void;
   menuOpen: boolean;
   handleLogout: () => void;
+  children?: React.ReactNode;
 }
 
-const Header: React.FC<HeaderProps> = ({ username, onUserMenu, menuOpen, handleLogout }) => (
+const Header: React.FC<HeaderProps> = ({ username, onUserMenu, menuOpen, handleLogout, children }) => (
   <header className="user-dashboard-header sticky-header">
     <div
       className="user-dashboard-header-left"
@@ -26,6 +27,11 @@ const Header: React.FC<HeaderProps> = ({ username, onUserMenu, menuOpen, handleL
       <img src="/logo.webp" alt="Logo" className="user-dashboard-logo" />
       <span className="user-dashboard-title">PITCH DREAMERS</span>
     </div>
+    {children && (
+      <div className="header-stepper-wrapper">
+        {children}
+      </div>
+    )}
     <div className="user-dashboard-header-right">
       <span
         className="user-dashboard-user-icon-name-wrapper"
