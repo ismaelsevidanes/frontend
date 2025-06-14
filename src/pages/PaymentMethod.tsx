@@ -10,10 +10,10 @@ import "../shared/components/Footer.css";
 import "./PaymentMethod.css";
 
 const paymentOptions = [
-  { key: "card", label: "Tarjeta de crédito o débito", icon: "/visa-mc.png" },
-  { key: "saved", label: "Tarjeta de crédito o débito guardada", icon: "/visa-mc.png" },
-  { key: "bizum", label: "Bizum", icon: "/bizum.png" },
-  { key: "paypal", label: "PayPal", icon: "/paypal.png" },
+  { key: "card", label: "Tarjeta de crédito o débito", icon: ["/images/metodospago/visa.svg", "/images/metodospago/mastercard.svg"] },
+  { key: "saved", label: "Tarjeta de crédito o débito guardada", icon: "/images/metodospago/visa.svg" },
+  { key: "paypal", label: "PayPal", icon: "/images/metodospago/paypal.svg" },
+  { key: "bizum", label: "Bizum", icon: "/images/metodospago/bizum.svg" },
 ];
 
 const PaymentMethod: React.FC = () => {
@@ -54,6 +54,21 @@ const PaymentMethod: React.FC = () => {
     // Si hay tarjeta guardada, seleccionarla por defecto
     if (savedCard) setSelectedOption("saved");
   }, [savedCard]);
+
+  useEffect(() => {
+    // Obtener el nombre del usuario del token o localStorage
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        setUsername(payload.name || payload.email || "Usuario");
+      } catch {
+        setUsername("Usuario");
+      }
+    } else {
+      setUsername("Usuario");
+    }
+  }, []);
 
   const handleCardInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -147,10 +162,9 @@ const PaymentMethod: React.FC = () => {
           <h2 className="payment-title">Método de pago</h2>
           <div className="payment-options">
             {paymentOptions.map(opt => (
-              <div key={opt.key} style={{position:'relative', width:'100%'}}>
+              <div key={opt.key} className="payment-option-wrapper">
                 <label
                   className={`payment-option${selectedOption === opt.key ? " selected" : ""}`}
-                  style={{justifyContent:'space-between'}}
                   tabIndex={0}
                   onKeyDown={e => {
                     if (e.key === 'Enter' || e.key === ' ') setSelectedOption(opt.key);
@@ -158,7 +172,7 @@ const PaymentMethod: React.FC = () => {
                   aria-checked={selectedOption === opt.key}
                   role="radio"
                 >
-                  <span style={{display:'flex',alignItems:'center',gap:8}}>
+                  <span className="payment-option-label">
                     <input
                       type="radio"
                       name="paymentOption"
@@ -169,31 +183,37 @@ const PaymentMethod: React.FC = () => {
                     />
                     {opt.label}
                     {opt.key === "saved" && savedCard && (
-                      <span style={{display:'flex',alignItems:'center',gap:8}}>
-                        <span style={{marginLeft:8, color:'#888'}}>Tarjeta terminada en ... {savedCard.last4}</span>
+                      <span className="payment-saved-last4">
+                        Tarjeta terminada en ... {savedCard.last4}
                       </span>
                     )}
                   </span>
-                  <span style={{display:'flex',alignItems:'center',gap:8}}>
-                    {opt.icon && <img src={opt.icon} alt={opt.label} style={{height:32, marginLeft:8}} />}
+                  <span className="payment-option-icon payment-option-icon-right">
+                    {/* Icono Papelera */}
+                    {opt.key === "saved" && savedCard && (
+                      <button
+                        type="button"
+                        className="delete-saved-card-btn"
+                        title="Eliminar tarjeta guardada"
+                        onClick={e => {e.stopPropagation(); setShowDeleteModal(true);}}
+                        tabIndex={0}
+                      >
+                        <FaTrashAlt size={28} color="#003366" />
+                      </button>
+                    )}
+                    {Array.isArray(opt.icon)
+                      ? opt.icon.map((img, i) => (
+                          <img key={i} src={img} alt={opt.label} />
+                        ))
+                      : opt.icon && <img src={opt.icon} alt={opt.label} />}
                   </span>
                 </label>
-                {/* Botón de eliminar fuera del label para la opción guardada */}
-                {opt.key === "saved" && savedCard && (
-                  <button
-                    type="button"
-                    className="delete-saved-card-btn"
-                    title="Eliminar tarjeta guardada"
-                    style={{position:'absolute', right:10, top:'50%', transform:'translateY(-50%)', background:'none', border:'none', cursor:'pointer', padding:0, display:'flex', alignItems:'center', zIndex:2}}
-                    onClick={e => {e.stopPropagation(); setShowDeleteModal(true);}}
-                    tabIndex={0}
-                  >
-                    <FaTrashAlt size={28} color="#e65c00" />
-                  </button>
-                )}
                 {/* Desplegable justo debajo de la opción seleccionada */}
                 {selectedOption === opt.key && opt.key === "card" && (
                   <div className="payment-card-fields payment-card-fields-dropdown">
+                    <div className="payment-fields-info">
+                      Todos los campos son obligatorios.
+                    </div>
                     <label>
                       Número de tarjeta
                       <input
@@ -206,10 +226,15 @@ const PaymentMethod: React.FC = () => {
                         inputMode="numeric"
                         pattern="[0-9 ]*"
                         required
+                        placeholder="1234 5678 9012 3456"
                       />
+                      <div className="payment-fields-icons">
+                        <img src="/images/metodospago/visa.svg" alt="Visa" />
+                        <img src="/images/metodospago/mastercard.svg" alt="Mastercard" />
+                      </div>
                     </label>
-                    <div className="payment-card-row">
-                      <label>
+                    <div className="payment-fields-row">
+                      <label className="payment-expiry-label">
                         Fecha de expiración
                         <input
                           type="text"
@@ -221,9 +246,10 @@ const PaymentMethod: React.FC = () => {
                           autoComplete="cc-exp"
                           required
                         />
+                        <span className="payment-fields-info"><b>Usa el formato mes/año. Por ejemplo: 08/25</b></span>
                       </label>
-                      <label>
-                        CVC
+                      <label className="payment-cvc-label">
+                        Código de seguridad
                         <input
                           type="text"
                           name="cvc"
@@ -232,7 +258,9 @@ const PaymentMethod: React.FC = () => {
                           maxLength={4}
                           autoComplete="cc-csc"
                           required
+                          placeholder="CVC"
                         />
+                        <span className="payment-fields-info"><b>Código de 3 cifras en el reverso de tu tarjeta</b></span>
                       </label>
                     </div>
                     <label>
@@ -244,6 +272,7 @@ const PaymentMethod: React.FC = () => {
                         onChange={handleCardInput}
                         autoComplete="cc-name"
                         required
+                        placeholder="Nombre y apellidos"
                       />
                     </label>
                     <label className="payment-save-card">
@@ -253,8 +282,11 @@ const PaymentMethod: React.FC = () => {
                         checked={cardData.save}
                         onChange={handleCardInput}
                       />
-                      Guardar para futuras compras
+                      Guardar para futuras compras. Activando esta casilla completarás futuras reservas de forma más rápida y cómoda. Podrás eliminar tu tarjeta cuando quieras.
                     </label>
+                    <button type="submit" className="payment-confirm-btn payment-confirm-btn" disabled={loading}>
+                      {loading ? "Procesando..." : "Confirmar"}
+                    </button>
                   </div>
                 )}
                 {selectedOption === opt.key && opt.key === "bizum" && (
@@ -268,28 +300,27 @@ const PaymentMethod: React.FC = () => {
           </div>
           {formError && <div className="payment-error">{formError}</div>}
           {success && <div className="payment-success">{success}</div>}
-          <button type="submit" className="payment-confirm-btn" disabled={loading}>{loading ? "Procesando..." : "Confirmar y continuar"}</button>
         </form>
       </main>
       <Footer />
       {/* Modal de confirmación de borrado */}
       {showDeleteModal && (
-        <Modal onClose={() => setShowDeleteModal(false)}>
-          <div className="delete-modal-content">
-            <div className="delete-modal-header">
+        <Modal isOpen={showDeleteModal} onClose={() => setShowDeleteModal(false)}>
+          <div className="delete-modal-content-custom">
+            <button className="delete-modal-close-custom" onClick={() => setShowDeleteModal(false)} aria-label="Cerrar">&times;</button>
+            <div className="delete-modal-header-custom">
               <span>Eliminar tarjeta</span>
-              <button className="delete-modal-close" onClick={() => setShowDeleteModal(false)} aria-label="Cerrar">&times;</button>
             </div>
-            <div className="delete-modal-body">
+            <div className="delete-modal-body-custom">
               ¿Seguro que deseas eliminar esta tarjeta?
             </div>
-            <div className="delete-modal-actions">
+            <div className="delete-modal-actions-custom">
               <button
-                className="delete-modal-confirm"
+                className="delete-modal-confirm-custom"
                 onClick={handleDeleteCard}
                 disabled={deleteLoading}
               >Eliminar</button>
-              <button className="delete-modal-cancel" onClick={() => setShowDeleteModal(false)} disabled={deleteLoading}>Cancelar</button>
+              <button className="delete-modal-cancel-custom" onClick={() => setShowDeleteModal(false)} disabled={deleteLoading}>Cancelar</button>
             </div>
           </div>
         </Modal>
