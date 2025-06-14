@@ -147,20 +147,6 @@
 .summary-ticket-btn.download:hover {
   background: #0050b3;
 }
-.summary-ticket-btn.cancel {
-  background: #fff;
-  color: #003366;
-  border: 1.5px solid #003366;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-}
-.summary-ticket-btn.cancel:hover {
-  background: #eaf1fa;
-  color: #003366;
-}
 .ticket-url-vertical {
   position: absolute;
   right: 0;

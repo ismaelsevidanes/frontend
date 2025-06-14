@@ -160,7 +160,10 @@ const Summary: React.FC = () => {
               reservationId={ticket.id || ticket.reservationId}
               createdAt={ticket.created_at || ticket.createdAt}
               creatorId={ticket.creator_id || ticket.user_id}
-              onCancelSuccess={() => navigate("/dashboard")}
+              onCancelSuccess={() => {
+                sessionStorage.removeItem("lastTicket");
+                navigate("/dashboard");
+              }}
               className="summary-ticket-btn cancel"
             />
           )}
