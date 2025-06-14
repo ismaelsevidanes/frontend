@@ -101,9 +101,8 @@ const Account: React.FC = () => {
   if (loading) return <div>Cargando...</div>;
 
   return (
-    <div className="account-root">
+    <>
       <Header
-        username={user?.name || ''}
         onUserMenu={() => setMenuOpen((open) => !open)}
         menuOpen={menuOpen}
         handleLogout={handleLogout}
@@ -182,7 +181,7 @@ const Account: React.FC = () => {
         </div>
       </main>
       <Footer />
-    </div>
+    </>
   );
 };
 

@@ -12,7 +12,6 @@ const Summary: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [ticket, setTicket] = useState<any>(null);
-  const [username, setUsername] = useState<string>("");
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -28,27 +27,6 @@ const Summary: React.FC = () => {
     // Redirige si no hay ticket
     if (!ticketData) {
       navigate("/dashboard", { replace: true });
-    }
-    // Obtener nombre usuario y controlar expiración del token
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        // Si el token tiene expiración y está caducado, redirige
-        if (payload.exp && Date.now() / 1000 > payload.exp) {
-          localStorage.removeItem("token");
-          window.location.href = "/login";
-          return;
-        }
-        setUsername(payload.name || payload.email || "Usuario");
-      } catch {
-        localStorage.removeItem("token");
-        window.location.href = "/login";
-        return;
-      }
-    } else {
-      window.location.href = "/login";
-      return;
     }
   }, [location.state, navigate]);
 
@@ -109,12 +87,11 @@ const Summary: React.FC = () => {
   return (
     <div className="dashboard-layout">
       <Header
-        username={username}
         onUserMenu={handleUserMenu}
         menuOpen={menuOpen}
         handleLogout={handleLogout}
       >
-        <CheckoutStepper step={2} />
+        <CheckoutStepper step={2} onGoToStep1={() => navigate("/payment-method")} />
       </Header>
       <main className="dashboard-main summary-main-center">
         <div className="summary-ticket-container print-ticket">

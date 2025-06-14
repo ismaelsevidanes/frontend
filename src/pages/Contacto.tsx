@@ -8,22 +8,7 @@ import './contacto.css';
 const Contacto: React.FC = () => {
   const [form, setForm] = useState({ nombre: "", email: "", mensaje: "" });
   const [enviado, setEnviado] = useState(false);
-  const [username, setUsername] = useState<string>("");
   const [menuOpen, setMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        setUsername(payload.name || payload.email || "Usuario");
-      } catch {
-        setUsername("Usuario");
-      }
-    } else {
-      setUsername("Usuario");
-    }
-  }, []);
 
   const handleUserMenu = () => setMenuOpen((open) => !open);
   const handleLogout = () => {
@@ -43,7 +28,6 @@ const Contacto: React.FC = () => {
   return (
     <>
       <Header
-        username={username}
         onUserMenu={handleUserMenu}
         menuOpen={menuOpen}
         handleLogout={handleLogout}

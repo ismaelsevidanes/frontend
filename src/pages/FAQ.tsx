@@ -5,21 +5,10 @@ import '../shared/components/Header.css';
 import '../shared/components/Footer.css';
 
 const FAQ: React.FC = () => {
-  const [username, setUsername] = useState<string>("");
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        setUsername(payload.name || payload.email || "Usuario");
-      } catch {
-        setUsername("Usuario");
-      }
-    } else {
-      setUsername("Usuario");
-    }
+    // Lógica de efecto, si es necesaria en el futuro
   }, []);
 
   const handleUserMenu = () => setMenuOpen((open) => !open);
@@ -31,7 +20,6 @@ const FAQ: React.FC = () => {
   return (
     <>
       <Header
-        username={username}
         onUserMenu={handleUserMenu}
         menuOpen={menuOpen}
         handleLogout={handleLogout}

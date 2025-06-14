@@ -41,7 +41,6 @@ const PaymentMethod: React.FC = () => {
   const [reservaTemp, setReservaTemp] = useState<any>(null);
   const [selectedOption, setSelectedOption] = useState<string>(""); // Ninguno seleccionado por defecto
   const [savedCard, setSavedCard] = useState<{ last4: string } | null>(null);
-  const [username, setUsername] = useState<string>("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [fieldData, setFieldData] = useState<any>(null);
@@ -69,21 +68,6 @@ const PaymentMethod: React.FC = () => {
     // Si hay tarjeta guardada, seleccionarla por defecto
     if (savedCard) setSelectedOption("saved");
   }, [savedCard]);
-
-  useEffect(() => {
-    // Obtener el nombre del usuario del token o localStorage
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        setUsername(payload.name || payload.email || "Usuario");
-      } catch {
-        setUsername("Usuario");
-      }
-    } else {
-      setUsername("Usuario");
-    }
-  }, []);
 
   useEffect(() => {
     if (reservaTemp?.field_id) {
@@ -383,7 +367,6 @@ const PaymentMethod: React.FC = () => {
   return (
     <div className="dashboard-layout">
       <Header
-        username={username}
         onUserMenu={handleUserMenu}
         menuOpen={menuOpen}
         handleLogout={handleLogout}

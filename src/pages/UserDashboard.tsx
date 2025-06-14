@@ -31,7 +31,6 @@ const UserDashboard: React.FC = () => {
   const [type, setType] = useState<string>("");
   const [leastReserved, setLeastReserved] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
-  const [username, setUsername] = useState<string>("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -91,21 +90,6 @@ const UserDashboard: React.FC = () => {
     // eslint-disable-next-line
   }, [type, leastReserved]);
 
-  useEffect(() => {
-    // Obtener el nombre del usuario del token o localStorage
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        setUsername(payload.name || payload.email || "Usuario");
-      } catch {
-        setUsername("Usuario");
-      }
-    } else {
-      setUsername("Usuario");
-    }
-  }, []);
-
   const handleLogout = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -136,7 +120,6 @@ const UserDashboard: React.FC = () => {
   return (
     <div className="dashboard-layout">
       <Header
-        username={username}
         onUserMenu={() => setMenuOpen((open) => !open)}
         menuOpen={menuOpen}
         handleLogout={handleLogout}

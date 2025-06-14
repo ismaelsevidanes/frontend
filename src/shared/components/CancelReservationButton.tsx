@@ -10,6 +10,7 @@ interface CancelReservationButtonProps {
   className?: string;
 }
 
+// No se necesita username ni lógica visual de usuario aquí, solo el token para la petición.
 function getUserFromToken() {
   const token = localStorage.getItem("token");
   if (!token) return null;

@@ -31,7 +31,6 @@ const FieldDetail: React.FC = () => {
   const [error, setError] = useState("");
 
   // User state
-  const [username, setUsername] = useState<string>("");
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -54,21 +53,6 @@ const FieldDetail: React.FC = () => {
         setLoading(false);
       });
   }, [id]);
-
-  useEffect(() => {
-    // Obtener el nombre del usuario del token o localStorage
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        setUsername(payload.name || payload.email || "Usuario");
-      } catch {
-        setUsername("Usuario");
-      }
-    } else {
-      setUsername("Usuario");
-    }
-  }, []);
 
   const handleUserMenu = () => setMenuOpen((open) => !open);
   const handleLogout = async () => {
@@ -135,9 +119,8 @@ const FieldDetail: React.FC = () => {
   }
 
   return (
-    <div className="dashboard-layout">
+    <>
       <Header
-        username={username}
         onUserMenu={handleUserMenu}
         menuOpen={menuOpen}
         handleLogout={handleLogout}
@@ -195,7 +178,7 @@ const FieldDetail: React.FC = () => {
         </div>
       </main>
       <Footer />
-    </div>
+    </>
   );
 };
 
