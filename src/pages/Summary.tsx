@@ -140,7 +140,7 @@ const Summary: React.FC = () => {
                 <div className="festival-row"><b>Fecha:</b> {ticket.date}</div>
                 <div className="festival-row"><b>Hora:</b> {ticket.slotLabel || ticket.slot}</div>
                 <div className="festival-row"><b>Nº de reservas:</b> {ticket.numUsers || 1}</div>
-                <div className="festival-row"><b>Total:</b> {ticket.total_price}€</div>
+                <div className="festival-row"><b>Total:</b> {ticket.total_price ? Number(ticket.total_price).toFixed(2) : "0.00"}€</div>
               </div>
               <div className="ticket-url-vertical">
                 <span>https://pitchdreamers.duckdns.org</span>

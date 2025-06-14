@@ -332,6 +332,12 @@ const PaymentMethod: React.FC = () => {
       ticket.numUsers = reservaTemp.numUsers;
       ticket.fieldName = fieldData?.name || reservaTemp.field_id;
       ticket.fieldAddress = fieldData?.address || "";
+      // Añadir fecha y precio unitario
+      ticket.date = reservaTemp.date;
+      // Corrige el precio unitario y el total
+      const precioUnitario = fieldData?.price || reservaTemp.price || fieldData?.price_per_hour || reservaTemp.price_per_hour || 0;
+      ticket.price = precioUnitario;
+      ticket.total_price = precioUnitario * ticket.numUsers;
       sessionStorage.removeItem("reservaTemp");
       sessionStorage.setItem("lastTicket", JSON.stringify(ticket));
       setSuccess("Reserva y método de pago guardados correctamente");
