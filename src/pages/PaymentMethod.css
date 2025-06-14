@@ -316,6 +316,30 @@
   color: #e65c00;
   transform: scale(1.18) rotate(-8deg);
 }
+.input-icon-group {
+  width: 100%;
+}
+.input-icon-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+.input-icon-wrapper input {
+  width: 100%;
+  padding-right: 38px;
+  box-sizing: border-box;
+}
+.input-icon-img {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 22px;
+  opacity: 0.7;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
 @media (max-width: 900px) {
   .payment-grid {
     flex-direction: column;

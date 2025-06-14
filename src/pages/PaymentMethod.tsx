@@ -70,8 +70,23 @@ const PaymentMethod: React.FC = () => {
     }
   }, []);
 
+  // Formateo automático para número de tarjeta y fecha
   const handleCardInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
+    if (name === "number") {
+      // Elimina todo lo que no sea dígito y añade espacio cada 4
+      let clean = value.replace(/\D/g, "").slice(0, 16);
+      let formatted = clean.replace(/(.{4})/g, "$1 ").trim();
+      setCardData((prev) => ({ ...prev, number: formatted }));
+      return;
+    }
+    if (name === "expiry") {
+      // Elimina todo lo que no sea dígito y añade barra tras 2 dígitos
+      let clean = value.replace(/\D/g, "").slice(0, 4);
+      let formatted = clean.length > 2 ? clean.slice(0, 2) + "/" + clean.slice(2) : clean;
+      setCardData((prev) => ({ ...prev, expiry: formatted }));
+      return;
+    }
     setCardData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
@@ -90,13 +105,14 @@ const PaymentMethod: React.FC = () => {
     }
     setLoading(true);
     try {
-      if (selectedOption === "card") {
-        // Guardar método de pago
+      // 1. Si ya tiene método de pago y quiere guardar uno nuevo (checkbox activado)
+      if (selectedOption === "card" && savedCard && cardData.save) {
+        // Elimina el método de pago guardado en la BD
+        await authFetch("/api/payments/method", { method: "DELETE" });
+        // Guarda el nuevo método de pago en la BD
         const res = await authFetch("/api/payments/method", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             cardNumber: cardData.number,
             expiry: cardData.expiry,
@@ -107,32 +123,74 @@ const PaymentMethod: React.FC = () => {
         if (!res.ok) {
           const data = await res.json();
           setFormError(data.message || "Error al guardar el método de pago");
+          setLoading(false);
           return;
         }
       }
-      // Crear la reserva definitiva
-      const reservaPayload = {
-        field_id: reservaTemp.field_id,
-        date: reservaTemp.date,
-        slot: reservaTemp.slot,
-        total_price: reservaTemp.total_price,
-        user_ids: Array(reservaTemp.numUsers).fill(null),
-      };
-      const reservaRes = await authFetch("/api/reservations", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(reservaPayload),
-      });
-      if (!reservaRes.ok) {
-        const data = await reservaRes.json();
-        setFormError(data.message || "Error al crear la reserva");
-        return;
+      // 2. Si ya tiene método de pago y NO quiere guardar el nuevo (checkbox desmarcado)
+      else if (selectedOption === "card" && savedCard && !cardData.save) {
+        // Solo guarda el nuevo método en sessionStorage, NO elimina ni modifica el de la BD
+        const encrypted = btoa(JSON.stringify({
+          number: cardData.number,
+          expiry: cardData.expiry,
+          cvc: cardData.cvc,
+          name: cardData.name,
+        }));
+        sessionStorage.setItem("tempCardData", encrypted);
+        // El método de pago en la BD sigue siendo el antiguo
       }
-      setSuccess("Reserva y método de pago guardados correctamente");
-      sessionStorage.removeItem("reservaTemp");
-      setTimeout(() => navigate("/dashboard"), 1500);
+      // 3. Si no tiene método de pago y NO quiere guardar (checkbox desmarcado)
+      else if (selectedOption === "card" && !savedCard && !cardData.save) {
+        const encrypted = btoa(JSON.stringify({
+          number: cardData.number,
+          expiry: cardData.expiry,
+          cvc: cardData.cvc,
+          name: cardData.name,
+        }));
+        sessionStorage.setItem("tempCardData", encrypted);
+      }
+      // 4. Si no tiene método de pago y quiere guardar uno nuevo
+      else if (selectedOption === "card" && !savedCard && cardData.save) {
+        const res = await authFetch("/api/payments/method", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            cardNumber: cardData.number,
+            expiry: cardData.expiry,
+            cvc: cardData.cvc,
+            cardName: cardData.name,
+          }),
+        });
+        if (!res.ok) {
+          const data = await res.json();
+          setFormError(data.message || "Error al guardar el método de pago");
+          setLoading(false);
+          return;
+        }
+      }
+      // Crear la reserva definitiva (esto siempre)
+      // const reservaPayload = {
+      //   field_id: reservaTemp.field_id,
+      //   date: reservaTemp.date,
+      //   slot: reservaTemp.slot,
+      //   total_price: reservaTemp.total_price,
+      //   user_ids: Array(reservaTemp.numUsers).fill(null),
+      // };
+      // const reservaRes = await authFetch("/api/reservations", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify(reservaPayload),
+      // });
+      // if (!reservaRes.ok) {
+      //   const data = await reservaRes.json();
+      //   setFormError(data.message || "Error al crear la reserva");
+      //   setLoading(false);
+      //   return;
+      // }
+      // setSuccess("Reserva y método de pago guardados correctamente");
+      // sessionStorage.removeItem("reservaTemp");
+      // setTimeout(() => navigate("/dashboard"), 1500);
+      setSuccess("Método de pago guardado correctamente");
     } catch (err) {
       setFormError("Error de red");
     } finally {
@@ -214,52 +272,64 @@ const PaymentMethod: React.FC = () => {
                     <div className="payment-fields-info">
                       Todos los campos son obligatorios.
                     </div>
-                    <label>
-                      Número de tarjeta
-                      <input
-                        type="text"
-                        name="number"
-                        value={cardData.number}
-                        onChange={handleCardInput}
-                        maxLength={19}
-                        autoComplete="cc-number"
-                        inputMode="numeric"
-                        pattern="[0-9 ]*"
-                        required
-                        placeholder="1234 5678 9012 3456"
-                      />
-                      <div className="payment-fields-icons">
-                        <img src="/images/metodospago/visa.svg" alt="Visa" />
-                        <img src="/images/metodospago/mastercard.svg" alt="Mastercard" />
-                      </div>
-                    </label>
+                    <div className="input-icon-group">
+                      <label>
+                        Número de tarjeta
+                        <input
+                          type="text"
+                          name="number"
+                          value={cardData.number}
+                          onChange={handleCardInput}
+                          maxLength={19}
+                          autoComplete="cc-number"
+                          inputMode="numeric"
+                          pattern="[0-9 ]*"
+                          required
+                          placeholder="1234 5678 9012 3456"
+                        />
+                        <div className="payment-fields-icons">
+                          <img src="/images/metodospago/visa.svg" alt="Visa" />
+                          <img src="/images/metodospago/mastercard.svg" alt="Mastercard" />
+                        </div>
+                      </label>
+                    </div>
                     <div className="payment-fields-row">
                       <label className="payment-expiry-label">
                         Fecha de expiración
-                        <input
-                          type="text"
-                          name="expiry"
-                          value={cardData.expiry}
-                          onChange={handleCardInput}
-                          maxLength={5}
-                          placeholder="MM/AA"
-                          autoComplete="cc-exp"
-                          required
-                        />
+                        <div className="input-icon-wrapper">
+                          <input
+                            type="text"
+                            name="expiry"
+                            value={cardData.expiry}
+                            onChange={handleCardInput}
+                            maxLength={5}
+                            placeholder="MM/AA"
+                            autoComplete="cc-exp"
+                            required
+                          />
+                          {cardData.expiry === "" && (
+                            <img src="/images/metodospago/fechatarjeta.svg" alt="icono fecha" className="input-icon-img" />
+                          )}
+                        </div>
                         <span className="payment-fields-info"><b>Usa el formato mes/año. Por ejemplo: 08/25</b></span>
                       </label>
                       <label className="payment-cvc-label">
                         Código de seguridad
-                        <input
-                          type="text"
-                          name="cvc"
-                          value={cardData.cvc}
-                          onChange={handleCardInput}
-                          maxLength={4}
-                          autoComplete="cc-csc"
-                          required
-                          placeholder="CVC"
-                        />
+                        <div className="input-icon-wrapper">
+                          <input
+                            type="text"
+                            name="cvc"
+                            value={cardData.cvc}
+                            onChange={handleCardInput}
+                            maxLength={4}
+                            autoComplete="cc-csc"
+                            required
+                            placeholder="CVC"
+                          />
+                          {cardData.cvc === "" && (
+                            <img src="/images/metodospago/csvtarjeta.svg" alt="icono cvc" className="input-icon-img" />
+                          )}
+                        </div>
                         <span className="payment-fields-info"><b>Código de 3 cifras en el reverso de tu tarjeta</b></span>
                       </label>
                     </div>
