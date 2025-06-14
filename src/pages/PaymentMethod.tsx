@@ -44,6 +44,8 @@ const PaymentMethod: React.FC = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [fieldData, setFieldData] = useState<any>(null);
+  // Estado para el modal de confirmación de pago
+  const [showConfirmPaymentModal, setShowConfirmPaymentModal] = useState(false);
 
   useEffect(() => {
     // obtener usuario del token
@@ -198,28 +200,6 @@ const PaymentMethod: React.FC = () => {
           return;
         }
       }
-      // Crear la reserva definitiva (esto siempre)
-      // const reservaPayload = {
-      //   field_id: reservaTemp.field_id,
-      //   date: reservaTemp.date,
-      //   slot: reservaTemp.slot,
-      //   total_price: reservaTemp.total_price,
-      //   user_ids: Array(reservaTemp.numUsers).fill(null),
-      // };
-      // const reservaRes = await authFetch("/api/reservations", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify(reservaPayload),
-      // });
-      // if (!reservaRes.ok) {
-      //   const data = await reservaRes.json();
-      //   setFormError(data.message || "Error al crear la reserva");
-      //   setLoading(false);
-      //   return;
-      // }
-      // setSuccess("Reserva y método de pago guardados correctamente");
-      // sessionStorage.removeItem("reservaTemp");
-      // setTimeout(() => navigate("/dashboard"), 1500);
       setSuccess("Método de pago guardado correctamente");
     } catch (err) {
       setFormError("Error de red");
@@ -265,10 +245,94 @@ const PaymentMethod: React.FC = () => {
     }
   }, [success]);
 
-  if (!reservaTemp) return null;
+  // Comprobación de método de pago válido (en session o en la BD)
+  const hasPaymentMethod = React.useMemo(() => {
+    if (savedCard) return true;
+    try {
+      const tempCard = sessionStorage.getItem("tempCardData");
+      if (!tempCard) return false;
+      const card = JSON.parse(atob(tempCard));
+      return !!(card && card.number && card.expiry && card.cvc && card.name);
+    } catch {
+      return false;
+    }
+  }, [savedCard, success]);
 
+  // Handler para el botón de Confirmar reserva en el resumen
+  const handleOpenConfirmPayment = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!hasPaymentMethod) {
+      setFormError("Debes añadir un método de pago antes de confirmar la reserva.");
+      return;
+    }
+    setFormError("");
+    setShowConfirmPaymentModal(true);
+  };
+
+  // Handler para confirmar el pago (llama a handleSubmit real y crea la reserva)
+  const handleConfirmPayment = async (e?: React.FormEvent) => {
+    setShowConfirmPaymentModal(false);
+    setFormError("");
+    setSuccess("");
+    setLoading(true);
+    try {
+      // validar que hay un método de pago
+      if (!hasPaymentMethod) {
+        setFormError("Debes añadir un método de pago antes de confirmar la reserva.");
+        setLoading(false);
+        return;
+      }
+      // Validar datos obligatorios antes de enviar
+      if (!reservaTemp?.field_id || !reservaTemp?.date || !reservaTemp?.slot || !reservaTemp?.total_price || !reservaTemp?.numUsers) {
+        setFormError("Faltan datos obligatorios para la reserva. Por favor, vuelve a seleccionar el campo y horario.");
+        setLoading(false);
+        return;
+      }
+      // Obtener el id del usuario actual del token
+      let userId = null;
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split(".")[1]));
+          userId = payload.id || payload.user_id || payload._id || null;
+        } catch {}
+      }
+      // Construir user_ids con el id del usuario actual
+      const user_ids = userId ? Array(reservaTemp.numUsers).fill(userId) : undefined;
+      const reservaPayload = {
+        field_id: reservaTemp.field_id,
+        date: reservaTemp.date,
+        slot: reservaTemp.slot,
+        total_price: reservaTemp.total_price,
+        user_ids,
+      };
+      // Eliminar user_ids si no hay id válido
+      if (!userId) delete reservaPayload.user_ids;
+      const reservaRes = await authFetch("/api/reservations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(reservaPayload),
+      });
+      if (!reservaRes.ok) {
+        let data = {};
+        try { data = await reservaRes.json(); } catch {}
+        setFormError((data as any).message || "Error al crear la reserva (servidor)");
+        setLoading(false);
+        return;
+      }
+      setSuccess("Reserva y método de pago guardados correctamente");
+      sessionStorage.removeItem("reservaTemp");
+      setTimeout(() => navigate("/dashboard"), 1500);
+    } catch (err) {
+      setFormError("Error de red o datos inválidos");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // slotLabel debe estar definido antes de usarse
   const slotLabel = reservaTemp?.slot ? (SLOTS.find(s => s.id === Number(reservaTemp.slot))?.label || reservaTemp.slot) : "-";
-
+  
   return (
     <div className="dashboard-layout">
       <Header username={username} onUserMenu={() => {}} menuOpen={false} handleLogout={() => {}} />
@@ -440,7 +504,7 @@ const PaymentMethod: React.FC = () => {
             reserva={reservaTemp}
             fieldData={fieldData}
             slotLabel={slotLabel}
-            onConfirm={handleSubmit}
+            onConfirm={handleOpenConfirmPayment}
             confirmDisabled={loading}
           />
         </div>
@@ -464,6 +528,28 @@ const PaymentMethod: React.FC = () => {
                 disabled={deleteLoading}
               >Eliminar</button>
               <button className="delete-modal-cancel-custom" onClick={() => setShowDeleteModal(false)} disabled={deleteLoading}>Cancelar</button>
+            </div>
+          </div>
+        </Modal>
+      )}
+      {/* Modal de confirmación de pago */}
+      {showConfirmPaymentModal && (
+        <Modal isOpen={showConfirmPaymentModal} onClose={() => setShowConfirmPaymentModal(false)}>
+          <div className="delete-modal-content-custom">
+            <button className="delete-modal-close-custom" onClick={() => setShowConfirmPaymentModal(false)} aria-label="Cerrar">&times;</button>
+            <div className="delete-modal-header-custom">
+              <span>Confirmar Pago</span>
+            </div>
+            <div className="delete-modal-body-custom">
+              Se procederá a realizar el pago
+            </div>
+            <div className="delete-modal-actions-custom">
+              <button
+                className="delete-modal-confirm-custom"
+                onClick={handleConfirmPayment}
+                disabled={loading}
+              >Confirmar</button>
+              <button className="delete-modal-cancel-custom" onClick={() => setShowConfirmPaymentModal(false)} disabled={loading}>Cancelar</button>
             </div>
           </div>
         </Modal>

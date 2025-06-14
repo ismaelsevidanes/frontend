@@ -166,7 +166,7 @@ const ReservaForm: React.FC<ReservaFormProps> = ({ field, nextWeekendDates, onSu
       </div>
       {formError && <div className="reserva-error">{formError}</div>}
       {success && <div className="reserva-success">{success}</div>}
-      <button type="submit" className="reserva-btn" disabled={loading || reservasDisabled}>{loading ? "Reservando..." : "Confirmar Reserva"}</button>
+      <button type="submit" className="reserva-btn" disabled={loading || reservasDisabled}>{loading ? "Reservando..." : "Continuar con la Reserva"}</button>
     </form>
   );
 };
