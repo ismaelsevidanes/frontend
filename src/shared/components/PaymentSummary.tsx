@@ -22,15 +22,15 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({ reserva, fieldData, slo
   return (
     <aside className="payment-summary">
       <h3 className="payment-summary-title">Resumen</h3>
-      <div className="payment-summary-row"><b>Estadio:</b> {nombreEstadio}</div>
-      <div className="payment-summary-row"><b>Localidad:</b> {localidad}</div>
-      <div className="payment-summary-row"><b>Dirección:</b> {direccion}</div>
-      <div className="payment-summary-row"><b>Fecha:</b> {fecha}</div>
-      <div className="payment-summary-row"><b>Hora:</b> {hora}</div>
-      <div className="payment-summary-row"><b>Nº de reservas:</b> {numJugadores}</div>
+      <div className="payment-summary-row"><span>Estadio:</span> <b>{nombreEstadio}</b></div>
+      <div className="payment-summary-row"><span>Localidad:</span> <b>{localidad}</b></div>
+      <div className="payment-summary-row"><span>Dirección:</span> <b>{direccion}</b></div>
+      <div className="payment-summary-row"><span>Fecha:</span> <b>{fecha}</b></div>
+      <div className="payment-summary-row"><span>Hora:</span> <b>{hora}</b></div>
+      <div className="payment-summary-row"><span>Nº de reservas:</span> <b>{numJugadores}</b></div>
       <hr className="payment-summary-divider" />
       <div className="payment-summary-row payment-summary-total">
-        <span className="payment-summary-total-label">Total:</span> {precio}
+        <span className="payment-summary-total-label">Total:</span> <b>{precio}</b>
       </div>
       {onConfirm && (
         <button className="payment-summary-confirm-btn" onClick={onConfirm} disabled={confirmDisabled}>

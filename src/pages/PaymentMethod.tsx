@@ -46,6 +46,8 @@ const PaymentMethod: React.FC = () => {
   const [fieldData, setFieldData] = useState<any>(null);
   // Estado para el modal de confirmación de pago
   const [showConfirmPaymentModal, setShowConfirmPaymentModal] = useState(false);
+  // Estado para el menú de usuario
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     // obtener usuario del token
@@ -333,9 +335,39 @@ const PaymentMethod: React.FC = () => {
   // slotLabel debe estar definido antes de usarse
   const slotLabel = reservaTemp?.slot ? (SLOTS.find(s => s.id === Number(reservaTemp.slot))?.label || reservaTemp.slot) : "-";
   
+  // Handler para abrir/cerrar menú usuario (igual que en FieldDetail)
+  const handleUserMenu = () => setMenuOpen((open) => !open);
+
+  // Handler para logout (igual que en FieldDetail)
+  const handleLogout = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      window.location.href = "/login";
+      return;
+    }
+    try {
+      const response = await authFetch("/auth/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    } catch (error) {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    }
+  };
+
   return (
     <div className="dashboard-layout">
-      <Header username={username} onUserMenu={() => {}} menuOpen={false} handleLogout={() => {}} />
+      <Header
+        username={username}
+        onUserMenu={handleUserMenu}
+        menuOpen={menuOpen}
+        handleLogout={handleLogout}
+      />
       <main className="dashboard-main payment-main-center">
         <div className="payment-grid">
           <form className="payment-method-form" onSubmit={handleSubmit} aria-label="Formulario de método de pago">
