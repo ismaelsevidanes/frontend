@@ -275,16 +275,23 @@ const PaymentMethod: React.FC = () => {
                         placeholder="Nombre y apellidos"
                       />
                     </label>
-                    <label className="payment-save-card">
+                    <label className="payment-save-card" tabIndex={0} onKeyDown={e => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        setCardData(prev => ({ ...prev, save: !prev.save }));
+                      }
+                    }}>
                       <input
                         type="checkbox"
                         name="save"
                         checked={cardData.save}
                         onChange={handleCardInput}
+                        tabIndex={-1}
+                        aria-checked={cardData.save}
+                        aria-label="Guardar para futuras compras"
                       />
                       Guardar para futuras compras. Activando esta casilla completarás futuras reservas de forma más rápida y cómoda. Podrás eliminar tu tarjeta cuando quieras.
                     </label>
-                    <button type="submit" className="payment-confirm-btn payment-confirm-btn" disabled={loading}>
+                    <button type="submit" className="payment-confirm-btn" disabled={loading}>
                       {loading ? "Procesando..." : "Confirmar"}
                     </button>
                   </div>
