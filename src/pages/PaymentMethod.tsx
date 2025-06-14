@@ -240,6 +240,31 @@ const PaymentMethod: React.FC = () => {
     setSelectedOption("");
   };
 
+  // Refresca la vista y cierra el desplegable tras crear tarjeta
+  useEffect(() => {
+    if (success && selectedOption === "card") {
+      setSelectedOption("");
+      setReservaTemp((prev: any) => ({ ...prev }));
+    }
+    // Cierra el desplegable también si se guarda en sessionStorage (sin checkbox)
+    if (success && !cardData.save) {
+      setSelectedOption("");
+      setReservaTemp((prev: any) => ({ ...prev }));
+    }
+  }, [success]);
+
+  // Refresca el método de pago guardado tras guardar en la BD
+  useEffect(() => {
+    if (success && cardData.save) {
+      authFetch("/api/payments/method")
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+          if (data && data.last4) setSavedCard({ last4: data.last4 });
+          else setSavedCard(null);
+        });
+    }
+  }, [success]);
+
   if (!reservaTemp) return null;
 
   const slotLabel = reservaTemp?.slot ? (SLOTS.find(s => s.id === Number(reservaTemp.slot))?.label || reservaTemp.slot) : "-";
@@ -409,7 +434,7 @@ const PaymentMethod: React.FC = () => {
               ))}
             </div>
             {formError && <div className="payment-error">{formError}</div>}
-            {success && <div className="payment-success">{success}</div>}
+            {/*success && <div className="payment-success">{success}</div>*/}
           </form>
           <PaymentSummary
             reserva={reservaTemp}
