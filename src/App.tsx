@@ -9,6 +9,7 @@ import Contacto from './pages/Contacto';
 import FAQ from './pages/FAQ';
 import FieldDetail from './pages/FieldDetail';
 import PaymentMethod from './pages/PaymentMethod';
+import Summary from './pages/Summary';
 
 function App() {
   // Ruta protegida: solo se puede acceder a /pago si hay datos de reserva temporal
@@ -33,6 +34,7 @@ function App() {
       <Route path="/faq" element={<FAQ />} />
       <Route path="/reserva/:id" element={<FieldDetail />} />
       <Route path="/pago" element={<ProtectedPaymentRoute />} />
+      <Route path="/summary" element={<Summary />} />
     </Routes>
   );
 }

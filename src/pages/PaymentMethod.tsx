@@ -322,9 +322,20 @@ const PaymentMethod: React.FC = () => {
         setLoading(false);
         return;
       }
-      setSuccess("Reserva y método de pago guardados correctamente");
+      // Obtener datos de la reserva creada para el ticket
+      let ticket = reservaPayload;
+      try {
+        ticket = await reservaRes.json();
+      } catch {}
+      // Añadir info extra para el ticket
+      ticket.slotLabel = slotLabel;
+      ticket.numUsers = reservaTemp.numUsers;
+      ticket.fieldName = fieldData?.name || reservaTemp.field_id;
+      ticket.fieldAddress = fieldData?.address || "";
       sessionStorage.removeItem("reservaTemp");
-      setTimeout(() => navigate("/dashboard"), 1500);
+      sessionStorage.setItem("lastTicket", JSON.stringify(ticket));
+      setSuccess("Reserva y método de pago guardados correctamente");
+      setTimeout(() => navigate("/summary", { state: { ticket } }), 500);
     } catch (err) {
       setFormError("Error de red o datos inválidos");
     } finally {
