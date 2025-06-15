@@ -136,7 +136,7 @@ const FieldDetailContent: React.FC = () => {
             {field.address && <div className="field-detail-address">{field.address}</div>}
             <div className="field-detail-description">{field.description}</div>
             <div className="field-detail-type">Tipo: <b>{field.type === 'futbol7' ? 'Fútbol 7' : 'Fútbol 11'}</b></div>
-            <div className="field-detail-spots">Plazas disponibles: <b>{field.available_spots}</b> / {field.max_reservations}</div>
+            <div className="field-detail-spots">Plazas totales: <b>{field.type === 'futbol7' ? 14 : 22}</b></div>
           </section>
 
           {/* Columna Derecha: Reserva */}

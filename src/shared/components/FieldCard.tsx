@@ -76,7 +76,7 @@ const FieldCard: React.FC<FieldCardProps> = ({
       <p className="field-description">{description}</p>
       <div className="field-type">Tipo: <b>{type === 'futbol7' ? 'Fútbol 7' : 'Fútbol 11'}</b></div>
       <div className="field-spots">
-        Plazas disponibles: <b>{typeof available_spots === 'number' ? available_spots : max_reservations}</b> / {max_reservations}
+        Plazas totales: <b>{type === 'futbol7' ? 14 : 22}</b>
       </div>
       <div className="field-bottom">
         <span className="field-price">{price_per_hour} €</span>

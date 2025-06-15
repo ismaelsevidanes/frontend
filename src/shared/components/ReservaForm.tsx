@@ -173,7 +173,7 @@ const ReservaForm: React.FC<ReservaFormProps> = ({ field, nextWeekendDates, onSu
           />
           <button type="button" className="reserva-users-btn" aria-label="Aumentar" onClick={() => setNumUsers(Math.min(maxReservas, numUsers + 1))} tabIndex={0} disabled={numUsers >= maxReservas || reservasDisabled}>+</button>
         </div>
-        <span className="reserva-users-max">{reservasDisabled ? 'No hay plazas disponibles' : `Máximo ${maxReservas}`}</span>
+        <span className="reserva-users-max">{reservasDisabled ? 'No hay plazas disponibles' : `Reservas Disponibles: ${maxReservas}`}</span>
       </div>
       {formError && <div className="reserva-error">{formError}</div>}
       {success && <div className="reserva-success">{success}</div>}
