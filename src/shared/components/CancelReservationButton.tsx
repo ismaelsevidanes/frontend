@@ -43,6 +43,7 @@ const CancelReservationButton: React.FC<CancelReservationButtonProps> = ({
     if (isCreator) {
       const created = new Date(createdAt);
       const now = new Date();
+      // Calcula la diferencia en UTC
       const diffMinutes = (now.getTime() - created.getTime()) / 60000;
       return diffMinutes <= 15;
     }
@@ -87,8 +88,9 @@ const CancelReservationButton: React.FC<CancelReservationButtonProps> = ({
           <button className="delete-modal-close-custom" onClick={() => setShowModal(false)}>&times;</button>
           <div className="delete-modal-header-custom">Cancelar Reserva</div>
           <div className="delete-modal-body-custom">
-            ¿Estás seguro que quieres cancelar la reserva?<br />
-            Se devolverá el pago.
+            ¿Estás seguro que quieres cancelar la reserva?
+            Solo pordras cancelarlo antes que pasen <br /> 15 minutos<br /> <br />
+            Se devolverá el Pago Completo.
           </div>
           <div className="delete-modal-actions-custom">
             <button className="delete-modal-confirm-custom" onClick={handleCancel} disabled={loading}>

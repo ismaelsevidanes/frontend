@@ -93,7 +93,7 @@ const ReservationsHistory: React.FC = () => {
         ) : error ? (
           <div className="dashboard-error">{error}</div>
         ) : reservations.length === 0 ? (
-          <div className="dashboard-empty">No tienes reservas realizadas.</div>
+          <div className="dashboard-empty" style={{ textAlign: 'center', marginBottom: 32 }}>No tienes reservas realizadas.</div>
         ) : (
           <>
             <div className="reservations-history-list">
@@ -113,13 +113,27 @@ const ReservationsHistory: React.FC = () => {
                     <div className="reservation-card-quantity">Nº de Reservas: {res.quantity}</div>
                     <div className="reservation-card-price">{Number(res.total_price).toFixed(2)} €</div>
                   </div>
-                  <button
-                    className="reservation-card-detail-btn"
-                    onClick={e => { e.stopPropagation(); setSelected(res); }}
-                    aria-label="Ver detalles"
-                  >
-                    Ver Detalle
-                  </button>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-end' }}>
+                    <button
+                      className="reservation-card-detail-btn"
+                      onClick={e => { e.stopPropagation(); setSelected(res); }}
+                      aria-label="Ver detalles"
+                    >
+                      Ver Detalle
+                    </button>
+                    <div onClick={e => e.stopPropagation()}>
+                      <CancelReservationButton
+                        reservationId={res.id}
+                        createdAt={res.created_at}
+                        creatorId={res.creator_id}
+                        onCancelSuccess={() => {
+                          setSelected(null);
+                          setReservations(prev => prev.filter(r => r.id !== res.id));
+                        }}
+                        className="summary-ticket-btn cancel"
+                      />
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -148,17 +162,6 @@ const ReservationsHistory: React.FC = () => {
                 <span className={`reservation-status-badge reservation-status-${getReservationStatus(selected).label.toLowerCase()}`}>
                   {getReservationStatus(selected).label}
                 </span>
-              </div>
-              <div className="reservation-detail-actions">
-                <CancelReservationButton
-                  reservationId={selected.id}
-                  createdAt={selected.created_at}
-                  creatorId={selected.creator_id}
-                  onCancelSuccess={() => {
-                    setSelected(null);
-                    setReservations(reservations => reservations.filter(r => r.id !== selected.id));
-                  }}
-                />
               </div>
             </div>
           </div>
