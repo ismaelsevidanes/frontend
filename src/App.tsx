@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import UserDashboard from './pages/UserDashboard';
 import Account from './pages/Account';
 import Contacto from './pages/Contacto';
+import About from './pages/About';
 import FAQ from './pages/FAQ';
 import FieldDetail from './pages/FieldDetail';
 import PaymentMethod from './pages/PaymentMethod';
@@ -31,6 +32,7 @@ function App() {
       <Route path="/dashboard" element={<UserDashboard />} />
       <Route path="/account" element={<Account />} />
       <Route path="/contacto" element={<Contacto />} />
+      <Route path="/about" element={<About />} />
       <Route path="/faq" element={<FAQ />} />
       <Route path="/reserva/:id" element={<FieldDetail />} />
       <Route path="/pago" element={<ProtectedPaymentRoute />} />

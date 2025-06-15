@@ -48,9 +48,10 @@
 
 
 .user-dashboard-username {
-  font-size: 1.1rem;
-  color: #232323;
-  margin-left: 2px;
+  font-size: 1rem;
+  color: #003366;
+  font-weight: 600;
+  letter-spacing: 0.2px;
 }
 
 .user-dashboard-menu {
@@ -127,6 +128,68 @@
   background: #0050b3;
 }
 
+/* Estilos para el enlace de historial de reservas */
+.header-history-link, .user-dashboard-user-icon-name-wrapper {
+  display: inline-flex;
+  align-items: center;
+  color: #003366;
+  font-size: 1rem;
+  font-weight: 600;
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.header-history-link {
+  margin-right: 18px;
+}
+
+.header-history-link:hover .header-history-label,
+.user-dashboard-user-icon-name-wrapper:hover .user-dashboard-username {
+  text-decoration: underline;
+  color: #0050b3;
+}
+
+.header-history-label, .user-dashboard-username {
+  font-size: 1rem;
+  color: #003366;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+/* Nuevos estilos para enlaces del header (Sobre Nosotros y Contacto) */
+.header-link {
+  display: inline-flex;
+  align-items: center;
+  color: #003366;
+  font-size: 1rem;
+  font-weight: 400;
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: color 0.2s;
+  margin-right: 18px;
+}
+
+.header-link:last-child {
+  margin-right: 0;
+}
+
+.header-link:hover .header-link-label {
+  text-decoration: underline;
+  color: #0050b3;
+}
+
+.header-link-label {
+  font-size: 1rem;
+  color: #003366;
+  font-weight: 400;
+  letter-spacing: 0.2px;
+}
+
 /* Sticky header styles */
 .sticky-header {
   position: sticky;
@@ -142,6 +205,35 @@
 }
 
 /* Responsive styles */
+@media (max-width: 1000px) and (min-width: 601px) {
+  .user-dashboard-header {
+    max-width: 98vw;
+    padding: 10px 12px;
+    border-radius: 18px;
+    margin: 18px auto 24px auto;
+  }
+  .user-dashboard-title {
+    font-size: 1.3rem;
+  }
+  .user-dashboard-logo {
+    width: 36px;
+    height: 36px;
+  }
+  .user-dashboard-header-right {
+    gap: 8px;
+  }
+  .header-link, .header-history-link, .user-dashboard-user-icon-name-wrapper {
+    font-size: 0.95rem;
+    margin-right: 10px;
+  }
+  .header-link-label, .header-history-label, .user-dashboard-username {
+    font-size: 0.95rem;
+  }
+  .header-login-btn, .header-register-btn {
+    font-size: 0.95rem;
+    padding: 0.5rem 1rem;
+  }
+}
 @media (max-width: 600px) {
   .user-dashboard-header {
     width: 98vw;
@@ -152,25 +244,22 @@
     gap: 10px;
     border-radius: 16px;
   }
-
   .user-dashboard-header-left {
     flex-direction: column;
     align-items: center;
     gap: 6px;
   }
-
   .user-dashboard-title {
     font-size: 1.2rem;
     text-align: center;
   }
-
   .user-dashboard-header-right {
     flex-direction: row;
     justify-content: center;
     width: 100%;
     gap: 8px;
+    flex-wrap: wrap;
   }
-
   .sticky-header {
     top: 16px;
     margin-top: 16px !important;
