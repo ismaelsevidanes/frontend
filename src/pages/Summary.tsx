@@ -23,9 +23,18 @@ const SummaryContent: React.FC = () => {
     } else {
       const reserva = sessionStorage.getItem("lastTicket");
       if (reserva) ticketData = JSON.parse(reserva);
+      // Si falta slotLabel, intenta reconstruirlo
+      if (ticketData && !ticketData.slotLabel && ticketData.slot) {
+        const SLOTS = [
+          { id: 1, label: "09:00 - 10:30" },
+          { id: 2, label: "10:30 - 12:00" },
+          { id: 3, label: "12:00 - 13:30" },
+          { id: 4, label: "13:30 - 15:00" },
+        ];
+        ticketData.slotLabel = SLOTS.find(s => s.id === Number(ticketData.slot))?.label || ticketData.slot;
+      }
     }
     setTicket(ticketData);
-    // Redirige si no hay ticket
     if (!ticketData) {
       navigate("/dashboard", { replace: true });
     }
@@ -103,9 +112,9 @@ const SummaryContent: React.FC = () => {
               <div className="summary-ticket-body festival-ticket-body">
                 <div className="festival-row"><b>Usuario:</b> {username}</div>
                 <div className="festival-row"><b>Dirección:</b> {ticket.fieldAddress || ticket.address}</div>
-                <div className="festival-row"><b>Fecha:</b> {ticket.date}</div>
-                <div className="festival-row"><b>Hora:</b> {ticket.slotLabel || ticket.slot}</div>
-                <div className="festival-row"><b>Nº de reservas:</b> {ticket.numUsers || 1}</div>
+                <div className="festival-row"><b>Fecha:</b> {ticket.date || '-'}</div>
+                <div className="festival-row"><b>Hora:</b> {ticket.slotLabel || ticket.slot || '-'}</div>
+                <div className="festival-row"><b>Nº de reservas:</b> {ticket.numUsers || ticket.quantity || 1}</div>
                 <div className="festival-row"><b>Total:</b> {ticket.total_price ? Number(ticket.total_price).toFixed(2) : "0.00"}€</div>
               </div>
               <div className="ticket-url-vertical">

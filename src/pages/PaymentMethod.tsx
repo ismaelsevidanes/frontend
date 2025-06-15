@@ -59,10 +59,17 @@ const PaymentMethodContent = () => {
       });
     const reserva = sessionStorage.getItem("reservaTemp");
     if (!reserva) {
+      alert("No hay datos de reserva. Por favor, vuelve a seleccionar campo, fecha y hora.");
       navigate("/", { replace: true });
       return;
     }
-    setReservaTemp(JSON.parse(reserva));
+    const parsed = JSON.parse(reserva);
+    if (!parsed.field_id || !parsed.date || !parsed.slot || !(parsed.numUsers || parsed.quantity)) {
+      alert("Faltan datos de la reserva. Por favor, vuelve a seleccionar campo, fecha y hora.");
+      navigate("/", { replace: true });
+      return;
+    }
+    setReservaTemp(parsed);
   }, [navigate]);
 
   useEffect(() => {
@@ -264,19 +271,16 @@ const PaymentMethodContent = () => {
     setSuccess("");
     setLoading(true);
     try {
-      // validar que hay un método de pago
       if (!hasPaymentMethod) {
         setFormError("Debes añadir un método de pago antes de confirmar la reserva.");
         setLoading(false);
         return;
       }
-      // Validar datos obligatorios antes de enviar
-      if (!reservaTemp?.field_id || !reservaTemp?.date || !reservaTemp?.slot || !reservaTemp?.total_price || !reservaTemp?.numUsers) {
+      if (!reservaTemp?.field_id || !reservaTemp?.date || !reservaTemp?.slot || !(reservaTemp?.numUsers || reservaTemp?.quantity)) {
         setFormError("Faltan datos obligatorios para la reserva. Por favor, vuelve a seleccionar el campo y horario.");
         setLoading(false);
         return;
       }
-      // Obtener el id del usuario actual del token
       let userId = null;
       const token = localStorage.getItem("token");
       if (token) {
@@ -286,7 +290,7 @@ const PaymentMethodContent = () => {
         } catch {}
       }
       // Construir user_ids con el id del usuario actual
-      const user_ids = userId ? Array(reservaTemp.numUsers).fill(userId) : undefined;
+      const user_ids = userId ? Array(reservaTemp.numUsers || reservaTemp.quantity).fill(userId) : undefined;
       const reservaPayload = {
         field_id: reservaTemp.field_id,
         date: reservaTemp.date,

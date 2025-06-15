@@ -65,7 +65,18 @@ const ReservationsHistory: React.FC = () => {
     authFetch(`/api/reservations/me?${params.toString()}`)
       .then(res => res.ok ? res.json() : Promise.reject(res))
       .then(data => {
-        setReservations(data.data);
+        // Reconstruir slotLabel si falta
+        const SLOTS = [
+          { id: 1, label: "09:00 - 10:30" },
+          { id: 2, label: "10:30 - 12:00" },
+          { id: 3, label: "12:00 - 13:30" },
+          { id: 4, label: "13:30 - 15:00" },
+        ];
+        const reservas = (data.data || []).map((r: any) => ({
+          ...r,
+          slotLabel: r.slotLabel || SLOTS.find(s => s.id === Number(r.slot))?.label || r.slot,
+        }));
+        setReservations(reservas);
         setTotalPages(data.totalPages);
         setTotalReservations(data.totalReservations);
         setLoading(false);
@@ -161,11 +172,7 @@ const ReservationsHistory: React.FC = () => {
                       <div className="reservation-card-main">
                         <div className="reservation-card-title">{res.fieldName}</div>
                         <div className="reservation-card-date">{res.date} - {res.slotLabel}</div>
-                        <div className="reservation-card-address">{res.fieldAddress}</div>
-                        {res.fieldLocation && (
-                          <div className="reservation-card-location">{res.fieldLocation}</div>
-                        )}
-                        <div className="reservation-card-quantity">Nº de Reservas: {res.quantity}</div>
+                        <div className="reservation-card-quantity">Nº de Reservas: {res.quantity || res.numUsers || 1}</div>
                         <div className="reservation-card-price">{Number(res.total_price).toFixed(2)} €</div>
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-end' }}>
@@ -214,8 +221,8 @@ const ReservationsHistory: React.FC = () => {
                 <div className="reservation-detail-row"><b>Localidad:</b> {selected.fieldLocation}</div>
               )}
               <div className="reservation-detail-row"><b>Fecha:</b> {selected.date}</div>
-              <div className="reservation-detail-row"><b>Hora:</b> {selected.slotLabel}</div>
-              <div className="reservation-detail-row"><b>Nº de Reservas:</b> {selected.quantity}</div>
+              <div className="reservation-detail-row"><b>Hora:</b> {selected.slotLabel || selected.slot}</div>
+              <div className="reservation-detail-row"><b>Nº de Reservas:</b> {selected.quantity || selected.numUsers || 1}</div>
               <div className="reservation-detail-row"><b>Total:</b> {Number(selected.total_price).toFixed(2)} €</div>
               <div className="reservation-detail-row">
                 <b>Estado:</b>{' '}

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import dayjs from "dayjs";
 import "./ReservaForm.css";
 import { authFetch } from "../utils/authFetch";
+import { getAvailableSpots } from "../utils/getAvailableSpots";
 
 interface Field {
   id: number;
@@ -31,6 +32,7 @@ const ReservaForm: React.FC<ReservaFormProps> = ({ field, nextWeekendDates, onSu
   const [formError, setFormError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+  const [maxReservas, setMaxReservas] = useState<number>(field.max_reservations);
 
   // UX: Día solo puede ser sábado o domingo próximos
   const handleDayClick = (d: string) => {
@@ -59,8 +61,8 @@ const ReservaForm: React.FC<ReservaFormProps> = ({ field, nextWeekendDates, onSu
       setFormError("Debes seleccionar un día y un horario.");
       return;
     }
-    if (numUsers < 1 || numUsers > field.max_reservations) {
-      setFormError(`Debes indicar entre 1 y ${field.max_reservations} usuarios.`);
+    if (numUsers < 1 || numUsers > maxReservas) {
+      setFormError(`Debes indicar entre 1 y ${maxReservas} usuarios.`);
       return;
     }
     setLoading(true);
@@ -81,10 +83,19 @@ const ReservaForm: React.FC<ReservaFormProps> = ({ field, nextWeekendDates, onSu
     }
   };
 
-  // Calcular el máximo de reservas permitidas según plazas disponibles
-  const maxReservas = (typeof (field as any).available_spots === 'number' && (field as any).available_spots >= 1)
-    ? (field as any).available_spots
-    : 0;
+  // Consultar plazas disponibles cada vez que cambian fecha y slot
+  React.useEffect(() => {
+    if (!date || !slot) {
+      setMaxReservas(0);
+      return;
+    }
+    let cancelled = false;
+    getAvailableSpots(field.id, date, Number(slot))
+      .then(spots => { if (!cancelled) setMaxReservas(spots); })
+      .catch(() => { if (!cancelled) setMaxReservas(0); });
+    return () => { cancelled = true; };
+  }, [field.id, date, slot]);
+
   // Si no hay plazas, bloquear input y botones
   const reservasDisabled = maxReservas === 0;
 
