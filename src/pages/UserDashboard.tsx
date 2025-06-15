@@ -9,6 +9,7 @@ import FieldFilters from "../shared/components/FieldFilters";
 import Pagination from "../shared/components/Pagination"; // Asegúrate de que la ruta sea correcta
 import { useNavigate } from "react-router-dom";
 import { authFetch } from "../shared/utils/authFetch";
+import { UserMenuProvider, useUserMenu } from "../shared/components/UserMenuProvider";
 
 interface Field {
   id: number;
@@ -23,7 +24,8 @@ interface Field {
   available_spots: number;
 }
 
-const UserDashboard: React.FC = () => {
+const UserDashboardContent: React.FC = () => {
+  const { menuOpen, setMenuOpen, handleLogout } = useUserMenu();
   const [filteredFields, setFilteredFields] = useState<Field[]>([]);
   const [search, setSearch] = useState("");
   const [location, setLocation] = useState("");
@@ -31,7 +33,6 @@ const UserDashboard: React.FC = () => {
   const [type, setType] = useState<string>("");
   const [leastReserved, setLeastReserved] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -90,33 +91,6 @@ const UserDashboard: React.FC = () => {
     // eslint-disable-next-line
   }, [type, leastReserved]);
 
-  const handleLogout = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      window.location.href = "/login";
-      return;
-    }
-    try {
-      const response = await authFetch("/auth/logout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      // Si el logout es exitoso o el token ya está invalidado, borra el token y redirige
-      if (response.status === 200 || response.status === 401) {
-        localStorage.removeItem("token");
-        window.location.href = "/login";
-      } else {
-        localStorage.removeItem("token");
-        window.location.href = "/login";
-      }
-    } catch (error) {
-      localStorage.removeItem("token");
-      window.location.href = "/login";
-    }
-  };
-
   return (
     <div className="dashboard-layout">
       <Header
@@ -170,5 +144,11 @@ const UserDashboard: React.FC = () => {
     </div>
   );
 };
+
+const UserDashboard: React.FC = () => (
+  <UserMenuProvider>
+    <UserDashboardContent />
+  </UserMenuProvider>
+);
 
 export default UserDashboard;

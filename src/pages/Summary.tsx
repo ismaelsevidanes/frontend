@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { UserMenuProvider, useUserMenu } from "../shared/components/UserMenuProvider";
 import Header from "../shared/components/Header";
 import Footer from "../shared/components/Footer";
 import jsPDF from "jspdf";
@@ -8,11 +9,11 @@ import CancelReservationButton from "../shared/components/CancelReservationButto
 import CheckoutStepper from "../shared/components/CheckoutStepper";
 import "./Summary.css";
 
-const Summary: React.FC = () => {
+const SummaryContent: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { menuOpen, setMenuOpen, handleLogout, username } = useUserMenu();
   const [ticket, setTicket] = useState<any>(null);
-  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     // Intenta obtener los datos del ticket de location.state o sessionStorage
@@ -32,26 +33,6 @@ const Summary: React.FC = () => {
 
   // Handler para abrir/cerrar menú usuario (igual que en PaymentMethod)
   const handleUserMenu = () => setMenuOpen((open) => !open);
-
-  // Handler para logout (igual que en PaymentMethod)
-  const handleLogout = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      window.location.href = "/login";
-      return;
-    }
-    try {
-      await fetch("/auth/logout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-      localStorage.removeItem("token");
-      window.location.href = "/login";
-    } catch {
-      localStorage.removeItem("token");
-      window.location.href = "/login";
-    }
-  };
 
   // Función para descargar el ticket como imagen o PDF (placeholder)
   const handleDownload = async () => {
@@ -91,7 +72,7 @@ const Summary: React.FC = () => {
         menuOpen={menuOpen}
         handleLogout={handleLogout}
       >
-        <CheckoutStepper step={2} onGoToStep1={() => navigate("/payment-method")} />
+        <CheckoutStepper step={2} />
       </Header>
       <main className="dashboard-main summary-main-center">
         <div className="summary-ticket-container print-ticket">
@@ -153,5 +134,11 @@ const Summary: React.FC = () => {
     </div>
   );
 };
+
+const Summary: React.FC = () => (
+  <UserMenuProvider>
+    <SummaryContent />
+  </UserMenuProvider>
+);
 
 export default Summary;

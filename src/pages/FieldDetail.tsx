@@ -8,6 +8,7 @@ import "../shared/components/Footer.css";
 import GoogleMapEmbed from "../shared/components/GoogleMapEmbed";
 import ReservaForm from "../shared/components/ReservaForm";
 import { authFetch } from "../shared/utils/authFetch";
+import { UserMenuProvider, useUserMenu } from "../shared/components/UserMenuProvider";
 
 interface Field {
   id: number;
@@ -23,15 +24,14 @@ interface Field {
   images: string[];
 }
 
-const FieldDetail: React.FC = () => {
+const FieldDetailContent: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [field, setField] = useState<Field | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // User state
-  const [menuOpen, setMenuOpen] = useState(false);
+  const { menuOpen, setMenuOpen, handleLogout } = useUserMenu();
 
   useEffect(() => {
     if (!id) return;
@@ -53,33 +53,6 @@ const FieldDetail: React.FC = () => {
         setLoading(false);
       });
   }, [id]);
-
-  const handleUserMenu = () => setMenuOpen((open) => !open);
-  const handleLogout = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      window.location.href = "/login";
-      return;
-    }
-    try {
-      const response = await authFetch("/auth/logout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (response.status === 200 || response.status === 401) {
-        localStorage.removeItem("token");
-        window.location.href = "/login";
-      } else {
-        localStorage.removeItem("token");
-        window.location.href = "/login";
-      }
-    } catch (error) {
-      localStorage.removeItem("token");
-      window.location.href = "/login";
-    }
-  };
 
   // Carrusel local (no globalizado)
   const [carouselIndex, setCarouselIndex] = useState(0);
@@ -121,7 +94,7 @@ const FieldDetail: React.FC = () => {
   return (
     <>
       <Header
-        onUserMenu={handleUserMenu}
+        onUserMenu={() => setMenuOpen((open) => !open)}
         menuOpen={menuOpen}
         handleLogout={handleLogout}
       />
@@ -181,5 +154,11 @@ const FieldDetail: React.FC = () => {
     </>
   );
 };
+
+const FieldDetail: React.FC = () => (
+  <UserMenuProvider>
+    <FieldDetailContent />
+  </UserMenuProvider>
+);
 
 export default FieldDetail;

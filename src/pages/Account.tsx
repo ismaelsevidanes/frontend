@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Header from "../shared/components/Header";
 import Footer from "../shared/components/Footer";
 import { authFetch } from "../shared/utils/authFetch";
+import { UserMenuProvider, useUserMenu } from "../shared/components/UserMenuProvider";
 import "../shared/components/Header.css";
 import "../shared/components/Footer.css";
 import "./account.css";
@@ -12,9 +13,9 @@ interface User {
   email: string;
 }
 
-const Account: React.FC = () => {
+const AccountContent: React.FC = () => {
+  const { menuOpen, setMenuOpen, handleLogout } = useUserMenu();
   const [user, setUser] = useState<User | null>(null);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   // Estado para mostrar/ocultar contraseña
@@ -40,32 +41,6 @@ const Account: React.FC = () => {
         window.location.href = "/login";
       });
   }, []);
-
-  const handleLogout = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      window.location.href = "/login";
-      return;
-    }
-    try {
-      const response = await authFetch("/auth/logout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (response.status === 200 || response.status === 401) {
-        localStorage.removeItem("token");
-        window.location.href = "/login";
-      } else {
-        localStorage.removeItem("token");
-        window.location.href = "/login";
-      }
-    } catch {
-      localStorage.removeItem("token");
-      window.location.href = "/login";
-    }
-  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -184,5 +159,11 @@ const Account: React.FC = () => {
     </>
   );
 };
+
+const Account: React.FC = () => (
+  <UserMenuProvider>
+    <AccountContent />
+  </UserMenuProvider>
+);
 
 export default Account;

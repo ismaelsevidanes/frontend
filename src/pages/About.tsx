@@ -1,14 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import Header from "../shared/components/Header";
 import Footer from "../shared/components/Footer";
 import "./About.css";
+import { UserMenuProvider, useUserMenu } from "../shared/components/UserMenuProvider";
 
-const About: React.FC = () => {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    window.location.href = "/login";
-  };
+const AboutContent: React.FC = () => {
+  const { menuOpen, setMenuOpen, handleLogout } = useUserMenu();
   return (
     <div className="about-layout">
       <Header
@@ -100,5 +97,11 @@ const About: React.FC = () => {
     </div>
   );
 };
+
+const About: React.FC = () => (
+  <UserMenuProvider>
+    <AboutContent />
+  </UserMenuProvider>
+);
 
 export default About;

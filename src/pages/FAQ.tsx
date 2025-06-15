@@ -1,21 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Header from '../shared/components/Header';
 import Footer from '../shared/components/Footer';
 import '../shared/components/Header.css';
 import '../shared/components/Footer.css';
+import { UserMenuProvider, useUserMenu } from "../shared/components/UserMenuProvider";
 
-const FAQ: React.FC = () => {
-  const [menuOpen, setMenuOpen] = useState(false);
+const FAQContent = () => {
+  const { menuOpen, setMenuOpen, handleLogout } = useUserMenu();
 
   useEffect(() => {
     // Lógica de efecto, si es necesaria en el futuro
   }, []);
 
   const handleUserMenu = () => setMenuOpen((open) => !open);
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    window.location.href = "/login";
-  };
 
   return (
     <>
@@ -47,5 +44,11 @@ const FAQ: React.FC = () => {
     </>
   );
 };
+
+const FAQ: React.FC = () => (
+  <UserMenuProvider>
+    <FAQContent />
+  </UserMenuProvider>
+);
 
 export default FAQ;

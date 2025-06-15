@@ -7,6 +7,7 @@ import Modal from "../shared/components/Modal";
 import { authFetch } from "../shared/utils/authFetch";
 import PaymentSummary from "../shared/components/PaymentSummary";
 import CheckoutStepper from "../shared/components/CheckoutStepper";
+import { UserMenuProvider, useUserMenu } from "../shared/components/UserMenuProvider";
 import "../shared/components/Header.css";
 import "../shared/components/Footer.css";
 import "./PaymentMethod.css";
@@ -26,8 +27,9 @@ const SLOTS = [
   { id: 4, label: "13:30 - 15:00" },
 ];
 
-const PaymentMethod: React.FC = () => {
+const PaymentMethodContent = () => {
   const navigate = useNavigate();
+  const { menuOpen, setMenuOpen, handleLogout } = useUserMenu();
   const [cardData, setCardData] = useState({
     number: "",
     expiry: "",
@@ -46,8 +48,6 @@ const PaymentMethod: React.FC = () => {
   const [fieldData, setFieldData] = useState<any>(null);
   // Estado para el modal de confirmación de pago
   const [showConfirmPaymentModal, setShowConfirmPaymentModal] = useState(false);
-  // Estado para el menú de usuario
-  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     // obtener usuario del token
@@ -338,36 +338,11 @@ const PaymentMethod: React.FC = () => {
 
   // slotLabel debe estar definido antes de usarse
   const slotLabel = reservaTemp?.slot ? (SLOTS.find(s => s.id === Number(reservaTemp.slot))?.label || reservaTemp.slot) : "-";
-  
-  // Handler para abrir/cerrar menú usuario (igual que en FieldDetail)
-  const handleUserMenu = () => setMenuOpen((open) => !open);
-
-  // Handler para logout (igual que en FieldDetail)
-  const handleLogout = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      window.location.href = "/login";
-      return;
-    }
-    try {
-      const response = await authFetch("/auth/logout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      localStorage.removeItem("token");
-      window.location.href = "/login";
-    } catch (error) {
-      localStorage.removeItem("token");
-      window.location.href = "/login";
-    }
-  };
 
   return (
     <div className="dashboard-layout">
       <Header
-        onUserMenu={handleUserMenu}
+        onUserMenu={setMenuOpen}
         menuOpen={menuOpen}
         handleLogout={handleLogout}
       >
@@ -594,5 +569,11 @@ const PaymentMethod: React.FC = () => {
     </div>
   );
 };
+
+const PaymentMethod = () => (
+  <UserMenuProvider>
+    <PaymentMethodContent />
+  </UserMenuProvider>
+);
 
 export default PaymentMethod;
