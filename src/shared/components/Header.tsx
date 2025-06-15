@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./Header.css";
+import { useUserMenu } from "./UserMenuProvider";
 
 interface HeaderProps {
   onUserMenu: () => void;
@@ -9,22 +10,19 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ onUserMenu, menuOpen, handleLogout, children }) => {
-  const [username, setUsername] = useState<string>("");
+  const { username } = useUserMenu();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        setUsername(payload.name || payload.email || "Usuario");
+        JSON.parse(atob(token.split(".")[1]));
         setIsAuthenticated(true);
       } catch {
-        setUsername("");
         setIsAuthenticated(false);
       }
     } else {
-      setUsername("");
       setIsAuthenticated(false);
     }
   }, []);

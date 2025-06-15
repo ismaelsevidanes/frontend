@@ -14,7 +14,7 @@ interface User {
 }
 
 const AccountContent: React.FC = () => {
-  const { menuOpen, setMenuOpen, handleLogout } = useUserMenu();
+  const { menuOpen, setMenuOpen, handleLogout, updateUsername } = useUserMenu();
   const [user, setUser] = useState<User | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", password: "" });
@@ -63,11 +63,21 @@ const AccountContent: React.FC = () => {
       }),
     });
     if (res.ok) {
+      const data = await res.json();
       setMessage("Datos actualizados correctamente");
       setEditMode(false);
       setForm({ ...form, password: "" });
-      // Actualizar datos en pantalla
-      setUser((u) => u ? { ...u, name: form.name, email: form.email } : null);
+      // Actualiza el estado user y el contexto username inmediatamente
+      const newName = form.name;
+      setUser((u) => u ? { ...u, name: newName, email: form.email } : null);
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        const payload = JSON.parse(atob(data.token.split(".")[1]));
+        updateUsername(payload.name || payload.email || "Usuario");
+      } else {
+        updateUsername(newName);
+      }
+      // Fuerza un rerender del Header (opcional: puedes usar un estado global o contexto para esto si lo necesitas en más sitios)
     } else {
       setMessage("Error al actualizar los datos");
     }

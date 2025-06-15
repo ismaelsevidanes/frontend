@@ -5,6 +5,7 @@ interface UserMenuContextProps {
   setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
   handleLogout: () => void;
   username: string;
+  updateUsername: (newName: string) => void;
 }
 
 const UserMenuContext = createContext<UserMenuContextProps | undefined>(undefined);
@@ -27,12 +28,16 @@ export const UserMenuProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, []);
 
+  const updateUsername = (newName: string) => {
+    setUsername(newName);
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     window.location.href = "/login";
   };
   return (
-    <UserMenuContext.Provider value={{ menuOpen, setMenuOpen, handleLogout, username }}>
+    <UserMenuContext.Provider value={{ menuOpen, setMenuOpen, handleLogout, username, updateUsername }}>
       {children}
     </UserMenuContext.Provider>
   );
