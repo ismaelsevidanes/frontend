@@ -36,6 +36,7 @@ const UserDashboardContent: React.FC = () => {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
   const navigate = useNavigate();
   // Nueva función para construir la query de filtros y pedir al backend
   const fetchFields = async (showLoading = false, page = currentPage) => {
@@ -51,6 +52,7 @@ const UserDashboardContent: React.FC = () => {
     const data = await res.json();
     setFilteredFields(data.data || []);
     setTotalPages(data.totalPages || 1);
+    setTotalItems(data.totalItems || (data.data ? data.data.length : 0));
     if (showLoading) setLoading(false);
   };
 
@@ -134,6 +136,8 @@ const UserDashboardContent: React.FC = () => {
                   currentPage={currentPage}
                   totalPages={totalPages}
                   onPageChange={setCurrentPage}
+                  totalItems={totalItems}
+                  totalLabel="Campos"
                 />
               </div>
             </>

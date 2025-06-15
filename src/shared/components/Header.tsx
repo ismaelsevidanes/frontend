@@ -109,7 +109,7 @@ const Header: React.FC<HeaderProps> = ({ onUserMenu, menuOpen, handleLogout, chi
                 <rect x="3" y="4" width="18" height="18" rx="2"/>
                 <path d="M16 2v4M8 2v4M3 10h18"/>
               </svg>
-              <span className="header-history-label">Historial de reservas</span>
+              <span className="header-history-label">Mis reservas</span>
             </span>
             <span
               className="user-dashboard-user-icon-name-wrapper"

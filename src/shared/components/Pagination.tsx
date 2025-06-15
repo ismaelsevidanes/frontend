@@ -5,9 +5,11 @@ interface PaginationProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+  totalItems?: number;
+  totalLabel?: string;
 }
 
-const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPageChange }) => {
+const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPageChange, totalItems, totalLabel }) => {
   const getPages = () => {
     const pages = [];
     if (totalPages <= 5) {
@@ -69,6 +71,9 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
       >
         &raquo;
       </button>
+      {typeof totalItems === 'number' && (
+        <span className="pagination-total-items">{totalLabel || 'Total'}: {totalItems}</span>
+      )}
     </div>
   );
 };

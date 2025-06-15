@@ -34,7 +34,8 @@ export const UserMenuProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    window.location.href = "/login";
+    // No redirige, solo elimina el token y deja al usuario en la vista actual
+    window.location.reload(); // Opcional: recarga para limpiar estado de autenticación
   };
   return (
     <UserMenuContext.Provider value={{ menuOpen, setMenuOpen, handleLogout, username, updateUsername }}>
