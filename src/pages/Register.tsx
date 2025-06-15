@@ -49,6 +49,16 @@ function Register() {
         return;
       }
       setSuccess(true);
+      // Login automático tras registro
+      const loginResponse = await fetch('/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const loginData = await loginResponse.json();
+      if (loginResponse.ok && loginData.token) {
+        localStorage.setItem('token', loginData.token);
+      }
       // Redirigir a la ruta previa si existe (por ejemplo, FieldDetail o PaymentMethod)
       const from = (location.state as any)?.from;
       if (from) {
@@ -88,10 +98,10 @@ function Register() {
           <form className="register-form" onSubmit={handleSubmit}>
             <h1 className="register-title">Registrarse</h1>
             <label>Email
-              <input type="email" value={email} onChange={e => setEmail(e.target.value)} required style={{ background: '#fff' }} />
+              <input type="email" value={email} onChange={e => setEmail(e.target.value)} required aria-required="true" aria-label="Correo electrónico" />
             </label>
             <label>Usuario
-              <input type="text" value={username} onChange={e => setUsername(e.target.value)} required style={{ background: '#fff' }} />
+              <input type="text" value={username} onChange={e => setUsername(e.target.value)} required aria-required="true" aria-label="Usuario" />
             </label>
             <label>Contraseña
               <div className="register-password-wrapper">
@@ -100,7 +110,8 @@ function Register() {
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   required
-                  style={{ background: '#fff' }}
+                  aria-required="true"
+                  aria-label="Contraseña"
                 />
                 <span
                   className="register-password-toggle"
@@ -130,7 +141,8 @@ function Register() {
                   value={confirmPassword}
                   onChange={e => setConfirmPassword(e.target.value)}
                   required
-                  style={{ background: '#fff' }}
+                  aria-required="true"
+                  aria-label="Confirmar contraseña"
                 />
                 <span
                   className="register-password-toggle"
@@ -184,6 +196,25 @@ function Register() {
               <img src="https://www.svgrepo.com/show/452229/instagram-1.svg" alt="Instagram" className="register-social-icon" />
               Registrarse con Instagram
             </button>
+            <div style={{ textAlign: 'center', marginTop: 18 }}>
+              <span>¿Ya tienes una cuenta?{' '}
+                <a
+                  href="#"
+                  style={{ color: '#1976d2', fontWeight: 600, textDecoration: 'underline', cursor: 'pointer' }}
+                  onClick={e => {
+                    e.preventDefault();
+                    const from = (location.state as any)?.from;
+                    if (from) {
+                      navigate('/login', { state: { from } });
+                    } else {
+                      navigate('/login');
+                    }
+                  }}
+                >
+                  Inicia sesión
+                </a>
+              </span>
+            </div>
           </form>
         </div>
       </div>

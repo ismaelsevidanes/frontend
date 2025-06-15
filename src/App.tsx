@@ -26,7 +26,10 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      {/*Esta linea en el futuro sera para la vista inicio, falta implementarlo */}
+      {/* <Route path="/" element={<Home />} /> */} 
+      {/* Redirige a la vista de dashboard por defecto */}
+      <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="/admin-dashboard" element={<AdminDashboard />} />
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<Login />} />
