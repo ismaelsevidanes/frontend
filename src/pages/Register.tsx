@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './auth.css';
 
 function Register() {
@@ -14,6 +14,7 @@ function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,8 +49,11 @@ function Register() {
         return;
       }
       setSuccess(true);
-      // Redirigir siempre al dashboard de usuario
-      if (data.role === 'admin') {
+      // Redirigir a la ruta previa si existe (por ejemplo, FieldDetail o PaymentMethod)
+      const from = (location.state as any)?.from;
+      if (from) {
+        navigate(from);
+      } else if (data.role === 'admin') {
         navigate('/admin-dashboard');
       } else {
         navigate('/dashboard');

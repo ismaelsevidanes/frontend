@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { FaTrashAlt } from "react-icons/fa";
 import Header from "../shared/components/Header";
 import Footer from "../shared/components/Footer";
@@ -29,6 +29,7 @@ const SLOTS = [
 
 const PaymentMethodContent = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { menuOpen, setMenuOpen, handleLogout } = useUserMenu();
   const [cardData, setCardData] = useState({
     number: "",
@@ -570,10 +571,20 @@ const PaymentMethodContent = () => {
   );
 };
 
-const PaymentMethod = () => (
-  <UserMenuProvider>
-    <PaymentMethodContent />
-  </UserMenuProvider>
-);
+const PaymentMethod: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login", { state: { from: location.pathname + location.search } });
+    }
+  }, [navigate, location]);
+  return (
+    <UserMenuProvider>
+      <PaymentMethodContent />
+    </UserMenuProvider>
+  );
+};
 
 export default PaymentMethod;
