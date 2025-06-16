@@ -56,6 +56,7 @@ const MODELS = {
       { key: 'id', label: 'ID' },
       { key: 'field_id', label: 'Campo' },
       { key: 'start_time', label: 'Inicio' },
+      { key: 'end_time', label: 'Fin' },
       { key: 'slot', label: 'Slot' },
       { key: 'total_price', label: 'Precio' },
       { key: 'status', label: 'Estado' },
@@ -72,13 +73,11 @@ const MODELS = {
   payments: {
     columns: [
       { key: 'id', label: 'ID' },
-      { key: 'user_id', label: 'Usuario' },
+      { key: 'user_id', label: 'Usuario', render: (row: any) => row.user_id || '-' },
       { key: 'type', label: 'Tipo' },
       { key: 'last4', label: 'Últimos 4' },
-      { key: 'created_at', label: 'Creado' },
     ],
-    formFields: [], // No edición/creac
-    // ón
+    formFields: [],
     endpoint: 'payments',
     title: 'Métodos de Pago',
     fetchUrl: '/api/payments/method/all',
@@ -159,6 +158,15 @@ function AdminDashboardContent() {
 
   const handleOpenModal = (item: any = null) => {
     setIsEditing(!!item);
+    // Si es edición de reserva, formatear la fecha correctamente para el input type=date
+    if (item && selectedModel === 'reservations' && item.date) {
+      // Asegura formato yyyy-MM-dd
+      const dateObj = new Date(item.date);
+      const yyyy = dateObj.getFullYear();
+      const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const dd = String(dateObj.getDate()).padStart(2, '0');
+      item.date = `${yyyy}-${mm}-${dd}`;
+    }
     setModalData(item);
     setIsModalOpen(true);
   };
@@ -177,10 +185,13 @@ function AdminDashboardContent() {
   const handleConfirmDelete = async () => {
     if (deleteId == null) return;
     let model = selectedModel;
-    if (model === 'payments') model = 'payment_methods';
     try {
+      let url = `/api/${model}/${deleteId}`;
+      if (model === 'payments') {
+        url = `/api/payments/method?id=${deleteId}`;
+      }
       const response = await authFetch(
-        `/api/${model}/${deleteId}`,
+        url,
         { method: 'DELETE' }
       );
       if (!response.ok) throw new Error('Error al eliminar el registro');
