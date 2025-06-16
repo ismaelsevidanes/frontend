@@ -9,6 +9,7 @@ import GoogleMapEmbed from "../shared/components/GoogleMapEmbed";
 import ReservaForm from "../shared/components/ReservaForm";
 import { authFetch } from "../shared/utils/authFetch";
 import { UserMenuProvider, useUserMenu } from "../shared/components/UserMenuProvider";
+import Breadcrumbs from "../shared/components/Breadcrumbs";
 
 interface Field {
   id: number;
@@ -98,6 +99,7 @@ const FieldDetailContent: React.FC = () => {
         menuOpen={menuOpen}
         handleLogout={handleLogout}
       />
+      <Breadcrumbs />
       <main className="dashboard-main">
         <div className="field-detail-grid">
           {/* Columna Izquierda: Imágenes */}

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { UserMenuProvider, useUserMenu } from "../shared/components/UserMenuProvider";
 import Header from '../shared/components/Header';
 import Footer from '../shared/components/Footer';
+import Breadcrumbs from "../shared/components/Breadcrumbs";
 import '../shared/components/Header.css';
 import '../shared/components/Footer.css';
 import './contacto.css';
@@ -29,6 +30,7 @@ const ContactoContent = () => {
         menuOpen={menuOpen}
         handleLogout={handleLogout}
       />
+      <Breadcrumbs />
       <div className="contacto-container">
         <h2 className="contacto-title">Contactar</h2>
         {enviado ? (

@@ -6,6 +6,7 @@ import { UserMenuProvider, useUserMenu } from "../shared/components/UserMenuProv
 import "../shared/components/Header.css";
 import "../shared/components/Footer.css";
 import "./account.css";
+import Breadcrumbs from "../shared/components/Breadcrumbs";
 
 interface User {
   id: number;
@@ -92,6 +93,7 @@ const AccountContent: React.FC = () => {
         menuOpen={menuOpen}
         handleLogout={handleLogout}
       />
+      <Breadcrumbs />
       <main className="account-main">
         <div className="account-card">
           <h2 className="account-title">Mi Cuenta</h2>

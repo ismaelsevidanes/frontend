@@ -7,6 +7,7 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import CancelReservationButton from "../shared/components/CancelReservationButton";
 import CheckoutStepper from "../shared/components/CheckoutStepper";
+import Breadcrumbs from "../shared/components/Breadcrumbs";
 import "./Summary.css";
 
 const SummaryContent: React.FC = () => {
@@ -83,6 +84,7 @@ const SummaryContent: React.FC = () => {
       >
         <CheckoutStepper step={2} />
       </Header>
+      <Breadcrumbs />
       <main className="dashboard-main summary-main-center">
         <div className="summary-ticket-container print-ticket">
           <div id="festival-ticket" className="summary-ticket festival-ticket">

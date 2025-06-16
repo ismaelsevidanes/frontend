@@ -4,6 +4,7 @@ import Footer from '../shared/components/Footer';
 import '../shared/components/Header.css';
 import '../shared/components/Footer.css';
 import { UserMenuProvider, useUserMenu } from "../shared/components/UserMenuProvider";
+import Breadcrumbs from "../shared/components/Breadcrumbs";
 
 const FAQContent = () => {
   const { menuOpen, setMenuOpen, handleLogout } = useUserMenu();
@@ -21,6 +22,7 @@ const FAQContent = () => {
         menuOpen={menuOpen}
         handleLogout={handleLogout}
       />
+      <Breadcrumbs />
       <div className="faq-container" style={{ maxWidth: 700, margin: "40px auto", background: "#fff", borderRadius: 16, boxShadow: "0 2px 16px rgba(0,0,0,0.08)", padding: 32 }}>
         <h2 style={{ color: "#003366", marginBottom: 24 }}>Preguntas Frecuentes (FAQ)</h2>
         <div style={{ marginBottom: 18 }}>

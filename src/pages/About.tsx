@@ -3,6 +3,7 @@ import Header from "../shared/components/Header";
 import Footer from "../shared/components/Footer";
 import "./About.css";
 import { UserMenuProvider, useUserMenu } from "../shared/components/UserMenuProvider";
+import Breadcrumbs from "../shared/components/Breadcrumbs";
 
 const AboutContent: React.FC = () => {
   const { menuOpen, setMenuOpen, handleLogout } = useUserMenu();
@@ -13,6 +14,7 @@ const AboutContent: React.FC = () => {
         menuOpen={menuOpen}
         handleLogout={handleLogout}
       />
+      <Breadcrumbs />
       <main className="about-main">
         <div className="about-card">
           <div className="about-photo-section">

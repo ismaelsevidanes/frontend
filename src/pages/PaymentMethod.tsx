@@ -8,6 +8,7 @@ import { authFetch } from "../shared/utils/authFetch";
 import PaymentSummary from "../shared/components/PaymentSummary";
 import CheckoutStepper from "../shared/components/CheckoutStepper";
 import { UserMenuProvider, useUserMenu } from "../shared/components/UserMenuProvider";
+import Breadcrumbs from "../shared/components/Breadcrumbs";
 import "../shared/components/Header.css";
 import "../shared/components/Footer.css";
 import "./PaymentMethod.css";
@@ -353,6 +354,7 @@ const PaymentMethodContent = () => {
       >
         <CheckoutStepper step={1} />
       </Header>
+      <Breadcrumbs />
       <main className="dashboard-main payment-main-center">
         <div className="payment-grid">
           <form className="payment-method-form" onSubmit={handleSubmit} aria-label="Formulario de método de pago">

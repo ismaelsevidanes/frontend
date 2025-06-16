@@ -6,6 +6,7 @@ import { authFetch } from "../shared/utils/authFetch";
 import CancelReservationButton from "../shared/components/CancelReservationButton";
 import Pagination from "../shared/components/Pagination";
 import ReservationFilters from "../shared/components/ReservationFilters";
+import Breadcrumbs from "../shared/components/Breadcrumbs";
 import "./reservationsHistory.css";
 
 interface Reservation {
@@ -124,6 +125,7 @@ const ReservationsHistory: React.FC = () => {
         menuOpen={menuOpen}
         handleLogout={handleLogout}
       />
+      <Breadcrumbs />
       <main className="dashboard-main">
         <ReservationFilters
           precioMin={precioMin}
