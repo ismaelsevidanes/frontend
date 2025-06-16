@@ -1,24 +1,104 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './dashboard.css';
 import Pagination from '../shared/components/Pagination';
-import Modal from '../shared/components/Modal';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { formatDate } from '../shared/utils/dateUtils';
 import { authFetch } from '../shared/utils/authFetch';
 import { useNavigate } from 'react-router-dom';
+import AdminSidebar from '../admin/AdminSidebar';
+import AdminTable from '../admin/AdminTable';
+import AdminModalForm from '../admin/AdminModalForm';
+import AdminModal from '../admin/AdminModal';
+import { AdminProvider, useAdmin } from '../admin/AdminContext';
 
-function AdminDashboard() {
+// Configuración de modelos centralizada
+const MODELS = {
+  users: {
+    columns: [
+      { key: 'id', label: 'ID' },
+      { key: 'name', label: 'Nombre' },
+      { key: 'email', label: 'Email' },
+      { key: 'role', label: 'Rol' },
+    ],
+    formFields: [
+      { key: 'name', label: 'Nombre', required: true },
+      { key: 'email', label: 'Email', required: true, type: 'email' },
+      { key: 'password', label: 'Contraseña', required: true, type: 'password' },
+      { key: 'role', label: 'Rol', required: true },
+    ],
+    endpoint: 'users',
+    title: 'Usuarios',
+  },
+  fields: {
+    columns: [
+      { key: 'id', label: 'ID' },
+      { key: 'name', label: 'Nombre' },
+      { key: 'location', label: 'Localidad' },
+      { key: 'type', label: 'Tipo' },
+      { key: 'price_per_hour', label: 'Precio/hora' },
+    ],
+    formFields: [
+      { key: 'name', label: 'Nombre', required: true },
+      { key: 'location', label: 'Localidad', required: true },
+      { key: 'type', label: 'Tipo', required: true },
+      { key: 'price_per_hour', label: 'Precio/hora', required: true, type: 'number' },
+    ],
+    endpoint: 'fields',
+    title: 'Campos',
+  },
+  reservations: {
+    columns: [
+      { key: 'id', label: 'ID' },
+      { key: 'field_id', label: 'Campo' },
+      { key: 'start_time', label: 'Inicio' },
+      { key: 'slot', label: 'Slot' },
+      { key: 'total_price', label: 'Precio' },
+      { key: 'status', label: 'Estado' },
+    ],
+    formFields: [
+      { key: 'field_id', label: 'Campo', required: true },
+      { key: 'date', label: 'Fecha', required: true, type: 'date' },
+      { key: 'slot', label: 'Slot', required: true },
+      { key: 'total_price', label: 'Precio', required: true, type: 'number' },
+    ],
+    endpoint: 'reservations',
+    title: 'Reservas',
+  },
+  payments: {
+    columns: [
+      { key: 'id', label: 'ID' },
+      { key: 'user_id', label: 'Usuario' },
+      { key: 'type', label: 'Tipo' },
+      { key: 'last4', label: 'Últimos 4' },
+      { key: 'created_at', label: 'Creado' },
+    ],
+    formFields: [
+      { key: 'user_id', label: 'Usuario', required: true },
+      { key: 'type', label: 'Tipo', required: true },
+      { key: 'last4', label: 'Últimos 4', required: true },
+    ],
+    endpoint: 'payments',
+    title: 'Métodos de Pago',
+    fetchUrl: '/api/payments/method/all',
+  },
+};
+
+const PAGE_SIZE = 10;
+
+function AdminDashboardContent() {
+  const { selectedModel } = useAdmin();
   const [data, setData] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedModel, setSelectedModel] = useState('');
   const [totalPages, setTotalPages] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalData, setModalData] = useState<any>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
   const navigate = useNavigate();
 
+  // Protección de ruta
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -36,24 +116,20 @@ function AdminDashboard() {
     }
   }, [navigate]);
 
-  useEffect(() => {
-    if (selectedModel) {
-      fetchData(selectedModel, currentPage);
-    }
-  }, [selectedModel, currentPage]);
-
-  const fetchData = async (model: string, page: number = 1) => {
+  // Fetch de datos SOLO cuando cambia el modelo o la página
+  const fetchData = useCallback(async (model: string, page: number = 1) => {
     try {
-      const response = await authFetch(
-        `/api/${model}?page=${page}`
-      );
+      let url = `/api/${model}?page=${page}`;
+      if (MODELS[model]?.fetchUrl) {
+        // Para métodos de pago, añade page y limit
+        url = `${MODELS[model].fetchUrl}?page=${page}&limit=${PAGE_SIZE}`;
+      }
+      const response = await authFetch(url);
       if (!response.ok) {
         throw new Error('Error al obtener los datos');
       }
       const result = await response.json();
-
-      // Format specific date fields before setting data
-      const formattedData = result.data.map((item: any) => {
+      const formattedData = result.data?.map((item: any) => {
         const formattedItem = { ...item };
         ['paid_at', 'start_time', 'end_time'].forEach((key) => {
           if (formattedItem[key]) {
@@ -61,19 +137,22 @@ function AdminDashboard() {
           }
         });
         return formattedItem;
-      });
-
-      setData(formattedData || result);
-      setTotalPages(result.totalPages || 10);
+      }) ?? [];
+      setData(formattedData);
+      setTotalPages(result.totalPages || 1);
     } catch (error) {
-      console.error(error);
+      setError('Error al cargar datos');
+      setData([]);
     }
-  };
+  }, []);
 
-  const handleModelChange = (model: string) => {
-    setSelectedModel(model);
-    setCurrentPage(1);
-  };
+  useEffect(() => {
+    setCurrentPage(1); // Reset page on model change
+  }, [selectedModel]);
+
+  useEffect(() => {
+    fetchData(selectedModel, currentPage);
+  }, [selectedModel, currentPage, fetchData]);
 
   const handleOpenModal = (item: any = null) => {
     setIsEditing(!!item);
@@ -86,189 +165,154 @@ function AdminDashboard() {
     setModalData(null);
   };
 
-  const handleDelete = async (id: number) => {
-    if (window.confirm('¿Estás seguro de que deseas eliminar este registro?')) {
-      try {
-        const response = await authFetch(
-          `/api/${selectedModel}/${id}`,
-          {
-            method: 'DELETE',
-          }
-        );
-        if (!response.ok) {
-          throw new Error('Error al eliminar el registro');
-        }
-        fetchData(selectedModel, currentPage);
-      } catch (error) {
-        console.error(error);
-      }
+  // Nuevo: abrir modal de confirmación antes de eliminar
+  const handleAskDelete = (id: number) => {
+    setDeleteId(id);
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (deleteId == null) return;
+    let model = selectedModel;
+    if (model === 'payments') model = 'payment_methods';
+    try {
+      const response = await authFetch(
+        `/api/${model}/${deleteId}`,
+        { method: 'DELETE' }
+      );
+      if (!response.ok) throw new Error('Error al eliminar el registro');
+      fetchData(selectedModel, currentPage);
+    } catch (error) {
+      setError('Error al eliminar el registro');
+    } finally {
+      setShowDeleteModal(false);
+      setDeleteId(null);
     }
   };
 
   const handleSubmit = async (formData: any) => {
+    let model = selectedModel;
+    if (model === 'payments') model = 'payment_methods';
     try {
       const method = isEditing ? 'PUT' : 'POST';
       const url = isEditing
-        ? `/api/${selectedModel}/${modalData.id}`
-        : `/api/${selectedModel}`;
+        ? `/api/${model}/${modalData.id}`
+        : `/api/${model}`;
       const response = await authFetch(url, {
         method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-      if (!response.ok) {
-        throw new Error('Error al guardar los datos');
-      }
+      if (!response.ok) throw new Error('Error al guardar los datos');
       fetchData(selectedModel, currentPage);
       handleCloseModal();
     } catch (error) {
-      console.error(error);
-      throw error;
+      setError('Error al guardar los datos');
     }
   };
 
-  function validateField(key: string, value: string) {
-    if (key === 'email') {
-      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value)) return 'Debe ser un email válido.';
-    }
-    if (key === 'password') {
-      if (value.length < 8) return 'La contraseña debe tener al menos 8 caracteres.';
-      if (!/[A-Z]/.test(value)) return 'Debe tener al menos una mayúscula.';
-      if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) return 'Debe tener al menos un símbolo.';
-    }
-    if (key === 'name' && !value.trim()) return 'El nombre es obligatorio.';
-    if (key === 'price_per_hour' && (isNaN(Number(value)) || Number(value) < 1)) return 'El precio debe ser mayor que 0.';
-    if (key === 'amount' && (isNaN(Number(value)) || Number(value) < 0.01)) return 'El monto debe ser mayor que 0.';
-    if (key === 'reservation_id' && (!value || isNaN(Number(value)) || Number(value) < 1)) return 'Reserva inválida.';
-    if (key === 'field_id' && (!value || isNaN(Number(value)) || Number(value) < 1)) return 'Campo inválido.';
-    if (key === 'user_ids' && (!value || value.split(',').length < 1)) return 'Debe haber al menos un usuario.';
-    if (key === 'start_time' && !value) return 'La fecha/hora de inicio es obligatoria.';
-    if (key === 'end_time' && !value) return 'La fecha/hora de fin es obligatoria.';
-    if (key === 'paid_at' && !value) return 'La fecha de pago es obligatoria.';
-    if (key === 'payment_method' && !value) return 'El método de pago es obligatorio.';
-    if (key === 'type' && value && !['futbol7','futbol11'].includes(value)) return 'Tipo inválido.';
-    if (key === 'role' && value && !['user','admin'].includes(value)) return 'Rol inválido.';
-    return '';
-  }
-
+  // --- UI ---
   return (
-    <main className="dashboard-container">
-      <div className="container">
-        <h1>Dashboard de Administrador</h1>
-        <nav className="dashboard-nav">
-          <button onClick={() => handleModelChange('users')}>Usuarios</button>
-          <button onClick={() => handleModelChange('fields')}>Campos</button>
-          <button onClick={() => handleModelChange('reservations')}>Reservas</button>
-          <button onClick={() => handleModelChange('payments')}>Pagos</button>
-        </nav>
-        {data.length > 0 ? (
-          <div className="table-container">
-            <table className="dashboard-table">
-              <thead>
-                <tr>
-                  {Object.keys(data[0]).map((key) => (
-                    <th key={key}>{key}</th>
-                  ))}
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.map((item, index) => (
-                  <tr key={index}>
-                    {Object.values(item).map((value, i) => (
-                      <td key={i}>{String(value)}</td>
-                    ))}
-                    <td>
-                      <button onClick={() => handleOpenModal(item)}>Editar</button>
-                      <button className="delete" onClick={() => handleDelete(item.id)}>Eliminar</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <div className="dashboard-pagination">
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={(page) => setCurrentPage(page)}
-              />
-            </div>
-          </div>
-        ) : (
-          <p>Selecciona una categoría para ver los datos.</p>
-        )}
-      </div>
-
-      <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
-        <h2>Modificar Datos</h2>
-        <form
-          onSubmit={async (e) => {
-            e.preventDefault();
-            setError('');
-            const formDataObj = Object.fromEntries(new FormData(e.target as HTMLFormElement));
-            // Validación frontend antes de enviar
-            for (const key of Object.keys(formDataObj)) {
-              const err = validateField(key, formDataObj[key]);
-              if (err) {
-                setError(err);
-                return;
-              }
-            }
-            try {
-              await handleSubmit(formDataObj);
-            } catch (err) {
-              setError(err instanceof Error ? err.message : 'Error desconocido');
-            }
-          }}
+    <div style={{ display: 'flex', minHeight: '100vh', background: '#f8f8f4' }}>
+      <AdminSidebar />
+      <main
+        className="dashboard-container"
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh',
+          background: 'transparent',
+          padding: 0,
+        }}
+      >
+        <h1 style={{ textAlign: 'center', marginTop: 0 }}>{MODELS[selectedModel].title}</h1>
+        <button
+          className="admin-modal-form-btn"
+          style={{ marginBottom: 24, marginTop: 8 }}
+          onClick={() => { setModalData(null); setIsEditing(false); setIsModalOpen(true); }}
         >
-          {error && <p style={{ color: 'red' }}>{error}</p>}
-          {modalData &&
-            Object.keys(data[0] || {})
-              .filter((key) => key !== 'id' && key !== 'created_at' && key !== 'updated_at')
-              .map((key) => (
-                <div key={key} style={{ position: 'relative' }}>
-                  <label>{key}:</label>
-                  {key === 'role' ? (
-                    <select
-                      name="role"
-                      defaultValue={modalData[key]}
-                      style={{ backgroundColor: '#fff', color: '#000' }}
-                    >
-                      <option value="user">User</option>
-                      <option value="admin">Admin</option>
-                    </select>
-                  ) : (
-                    <>
-                      <input
-                        name={key}
-                        type={key === 'password' && !showPassword ? 'password' : 'text'}
-                        defaultValue={modalData[key] || ''}
-                        style={{ backgroundColor: '#fff', color: '#888', paddingRight: '2rem' }}
-                        required={key === 'name' || key === 'email' || key === 'password'}
-                        onBlur={e => {
-                          const err = validateField(key, e.target.value);
-                          if (err) setError(err);
-                        }}
-                      />
-                      {key === 'password' && (
-                        <span
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="password-toggle"
-                        >
-                          {showPassword ? <FaEyeSlash /> : <FaEye />}
-                        </span>
-                      )}
-                    </>
-                  )}
-                </div>
-              ))}
-          <button type="submit">Guardar</button>
-        </form>
-      </Modal>
-    </main>
+          Crear {MODELS[selectedModel].title.slice(0, -1)}
+        </button>
+        <div style={{ width: '100%', maxWidth: 900, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <AdminTable
+            columns={MODELS[selectedModel].columns}
+            data={data}
+            onEdit={row => handleOpenModal(row)}
+            onDelete={row => handleAskDelete(row.id)}
+            loading={false}
+          />
+          <div className="dashboard-pagination" style={{ margin: '24px 0 0 0' }}>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </div>
+        </div>
+        {/* Modal de confirmación de eliminar */}
+        <AdminModal open={showDeleteModal} onClose={() => setShowDeleteModal(false)} title="Eliminar registro">
+          <div style={{ color: '#222', marginBottom: 28, fontSize: 16 }}>
+            ¿Seguro que deseas eliminar este registro?
+          </div>
+          <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
+            <button
+              onClick={handleConfirmDelete}
+              style={{
+                background: '#113366',
+                color: '#fff',
+                border: 'none',
+                borderRadius: 8,
+                padding: '0.7rem 2.2rem',
+                fontWeight: 600,
+                fontSize: 16,
+                cursor: 'pointer',
+                boxShadow: '0 2px 8px rgba(30,42,60,0.08)',
+                transition: 'background 0.2s',
+              }}
+            >Eliminar</button>
+            <button
+              onClick={() => setShowDeleteModal(false)}
+              style={{
+                background: '#fff',
+                color: '#113366',
+                border: '1.5px solid #113366',
+                borderRadius: 8,
+                padding: '0.7rem 2.2rem',
+                fontWeight: 600,
+                fontSize: 16,
+                cursor: 'pointer',
+                boxShadow: '0 2px 8px rgba(30,42,60,0.04)',
+                transition: 'background 0.2s',
+              }}
+            >Cancelar</button>
+          </div>
+        </AdminModal>
+        {/* Modal de edición/creación */}
+        <AdminModal open={isModalOpen} onClose={handleCloseModal} title={isEditing ? `Editar ${MODELS[selectedModel].title.slice(0, -1)}` : `Crear ${MODELS[selectedModel].title.slice(0, -1)}`} width={420}>
+          <AdminModalForm
+            open={isModalOpen}
+            onClose={handleCloseModal}
+            onSubmit={async values => {
+              await handleSubmit(values);
+              setIsModalOpen(false);
+            }}
+            initialValues={modalData || {}}
+            fields={MODELS[selectedModel].formFields}
+            title={undefined} // Elimina el título interno del formulario
+          />
+        </AdminModal>
+      </main>
+    </div>
   );
 }
+
+const AdminDashboard: React.FC = () => (
+  <AdminProvider>
+    <AdminDashboardContent />
+  </AdminProvider>
+);
 
 export default AdminDashboard;

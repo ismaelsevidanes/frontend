@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./Header.css";
 import { useUserMenu } from "./UserMenuProvider";
+import { FaTools } from 'react-icons/fa';
 
 interface HeaderProps {
   onUserMenu: () => void;
@@ -12,18 +13,22 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ onUserMenu, menuOpen, handleLogout, children }) => {
   const { username } = useUserMenu();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       try {
-        JSON.parse(atob(token.split(".")[1]));
+        const payload = JSON.parse(atob(token.split(".")[1]));
         setIsAuthenticated(true);
+        setIsAdmin(payload.role === 'admin');
       } catch {
         setIsAuthenticated(false);
+        setIsAdmin(false);
       }
     } else {
       setIsAuthenticated(false);
+      setIsAdmin(false);
     }
   }, []);
 
@@ -44,6 +49,18 @@ const Header: React.FC<HeaderProps> = ({ onUserMenu, menuOpen, handleLogout, chi
       >
         <img src="/logo.webp" alt="Logo" className="user-dashboard-logo" />
         <span className="user-dashboard-title">PITCH DREAMERS</span>
+        {isAdmin && (
+          <button
+            className="header-admin-btn"
+            onClick={e => {
+              e.stopPropagation();
+              window.location.href = '/admin-dashboard';
+            }}
+          >
+            <FaTools style={{ marginRight: 8, fontSize: 18 }} />
+            Panel de Administrador
+          </button>
+        )}
       </div>
       {children && (
         <div className="header-stepper-wrapper">

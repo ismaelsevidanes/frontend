@@ -1,0 +1,24 @@
+.admin-modal-form-btn {
+  background: #113366;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.7rem 2.2rem;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  margin: 0 8px;
+  box-shadow: 0 2px 8px rgba(30,42,60,0.08);
+  transition: background 0.2s;
+}
+.admin-modal-form-btn:disabled {
+  background: #bfc8d6;
+  color: #fff;
+  cursor: not-allowed;
+}
+.admin-modal-form-btn.cancel {
+  background: #fff;
+  color: #113366;
+  border: 1.5px solid #113366;
+  box-shadow: 0 2px 8px rgba(30,42,60,0.04);
+}

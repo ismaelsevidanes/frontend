@@ -204,6 +204,28 @@
   background: #fff;
 }
 
+/* Estilos para el botón de admin */
+.header-admin-btn {
+  margin-left: 18px;
+  display: inline-flex;
+  align-items: center;
+  background: #113366;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1.1rem;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.2s;
+  box-shadow: 0 2px 8px rgba(30,42,60,0.08);
+}
+
+.header-admin-btn:hover {
+  background: #0050b3;
+  color: #fff;
+}
+
 /* Responsive styles */
 @media (max-width: 1000px) and (min-width: 601px) {
   .user-dashboard-header {
