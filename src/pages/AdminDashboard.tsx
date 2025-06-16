@@ -5,6 +5,7 @@ import Modal from '../shared/components/Modal';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { formatDate } from '../shared/utils/dateUtils';
 import { authFetch } from '../shared/utils/authFetch';
+import { useNavigate } from 'react-router-dom';
 
 function AdminDashboard() {
   const [data, setData] = useState<any[]>([]);
@@ -16,6 +17,24 @@ function AdminDashboard() {
   const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      if (payload.role !== 'admin') {
+        navigate('/dashboard');
+        return;
+      }
+    } catch {
+      navigate('/login');
+    }
+  }, [navigate]);
 
   useEffect(() => {
     if (selectedModel) {
