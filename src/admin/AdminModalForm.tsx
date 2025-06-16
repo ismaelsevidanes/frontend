@@ -18,7 +18,7 @@ function AdminModalForm<T>({ open, onClose, onSubmit, initialValues, fields, tit
     <div className="admin-modal" role="dialog" aria-modal="true">
       <div className="admin-modal-content">
         <h3>{title}</h3>
-        <form onSubmit={e => { e.preventDefault(); onSubmit(values); }}>
+        <form onSubmit={e => { e.preventDefault(); onSubmit(values); }} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           {fields.map(f => (
             <div key={String(f.key)} className="admin-modal-field">
               <label htmlFor={String(f.key)}>{f.label}</label>
@@ -28,6 +28,8 @@ function AdminModalForm<T>({ open, onClose, onSubmit, initialValues, fields, tit
                 value={values[f.key] as any || ""}
                 required={f.required}
                 onChange={e => setValues(v => ({ ...v, [f.key]: e.target.value }))}
+                className="admin-modal-input"
+                autoComplete="off"
               />
             </div>
           ))}
