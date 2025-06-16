@@ -55,11 +55,7 @@ const ReservationsHistory: React.FC = () => {
     if (ubicacion) params.append("ubicacion", ubicacion);
     if (localidad) params.append("localidad", localidad);
     if (ordenarPorFecha) {
-      const today = new Date();
-      const yyyy = today.getFullYear();
-      const mm = String(today.getMonth() + 1).padStart(2, '0');
-      const dd = String(today.getDate()).padStart(2, '0');
-      params.append("fecha", `${yyyy}-${mm}-${dd}`);
+      params.append("ordenarPorFecha", "true");
     }
     if (numReservasMin) params.append("numReservasMin", numReservasMin);
     if (numReservasMax) params.append("numReservasMax", numReservasMax);
