@@ -525,6 +525,10 @@ const PaymentMethodContent = () => {
             slotLabel={slotLabel}
             onConfirm={handleOpenConfirmPayment}
             confirmDisabled={loading}
+            onCancelTemp={() => {
+              sessionStorage.removeItem("reservaTemp");
+              navigate("/dashboard");
+            }}
           />
         </div>
       </main>

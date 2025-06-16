@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import Modal from "./Modal";
 import "./PaymentSummary.css";
 
 interface PaymentSummaryProps {
@@ -7,9 +8,12 @@ interface PaymentSummaryProps {
   slotLabel?: string;
   onConfirm?: () => void;
   confirmDisabled?: boolean;
+  onCancelTemp?: () => void;
 }
 
-const PaymentSummary: React.FC<PaymentSummaryProps> = ({ reserva, fieldData, slotLabel, onConfirm, confirmDisabled }) => {
+const PaymentSummary: React.FC<PaymentSummaryProps> = ({ reserva, fieldData, slotLabel, onConfirm, confirmDisabled, onCancelTemp }) => {
+  const [showCancelModal, setShowCancelModal] = useState(false);
+
   // Preferir datos de fieldData si están disponibles
   const nombreEstadio = fieldData?.name || fieldData?.nombre || reserva?.field_name || reserva?.fieldName || "-";
   const localidad = fieldData?.location || fieldData?.localidad || fieldData?.city || reserva?.localidad || reserva?.city || "-";
@@ -36,6 +40,43 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({ reserva, fieldData, slo
         <button className="payment-summary-confirm-btn" onClick={onConfirm} disabled={confirmDisabled}>
           Confirmar reserva
         </button>
+      )}
+      {onCancelTemp && (
+        <>
+          <button
+            className="payment-summary-cancel-btn"
+            type="button"
+            onClick={() => setShowCancelModal(true)}
+            style={{ marginTop: 12, width: '100%' }}
+          >
+            Cancelar reserva
+          </button>
+          <Modal isOpen={showCancelModal} onClose={() => setShowCancelModal(false)}>
+            <div className="delete-modal-content-custom">
+              <button className="delete-modal-close-custom" onClick={() => setShowCancelModal(false)} aria-label="Cerrar">&times;</button>
+              <div className="delete-modal-header-custom">
+                ¿Quieres cancelar el proceso?
+              </div>
+              <div className="delete-modal-body-custom">
+                Tendrás que empezar de nuevo la reserva.
+              </div>
+              <div className="delete-modal-actions-custom">
+                <button
+                  className="delete-modal-confirm-custom"
+                  onClick={() => { setShowCancelModal(false); onCancelTemp(); }}
+                >
+                  Confirmar
+                </button>
+                <button
+                  className="delete-modal-cancel-custom"
+                  onClick={() => setShowCancelModal(false)}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </Modal>
+        </>
       )}
     </aside>
   );
