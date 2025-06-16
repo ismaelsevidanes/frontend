@@ -32,15 +32,21 @@ const MODELS = {
     columns: [
       { key: 'id', label: 'ID' },
       { key: 'name', label: 'Nombre' },
-      { key: 'location', label: 'Localidad' },
       { key: 'type', label: 'Tipo' },
+      { key: 'description', label: 'Descripción' },
+      { key: 'address', label: 'Dirección' },
+      { key: 'location', label: 'Localidad' },
       { key: 'price_per_hour', label: 'Precio/hora' },
+      { key: 'images', label: 'Imágenes' },
     ],
     formFields: [
       { key: 'name', label: 'Nombre', required: true },
-      { key: 'location', label: 'Localidad', required: true },
       { key: 'type', label: 'Tipo', required: true },
+      { key: 'description', label: 'Descripción', required: true },
+      { key: 'address', label: 'Dirección', required: true },
+      { key: 'location', label: 'Localidad', required: true },
       { key: 'price_per_hour', label: 'Precio/hora', required: true, type: 'number' },
+      { key: 'images', label: 'Imágenes (JSON)', required: false },
     ],
     endpoint: 'fields',
     title: 'Campos',
@@ -71,14 +77,12 @@ const MODELS = {
       { key: 'last4', label: 'Últimos 4' },
       { key: 'created_at', label: 'Creado' },
     ],
-    formFields: [
-      { key: 'user_id', label: 'Usuario', required: true },
-      { key: 'type', label: 'Tipo', required: true },
-      { key: 'last4', label: 'Últimos 4', required: true },
-    ],
+    formFields: [], // No edición/creac
+    // ón
     endpoint: 'payments',
     title: 'Métodos de Pago',
     fetchUrl: '/api/payments/method/all',
+    readOnly: true,
   },
 };
 
@@ -121,7 +125,6 @@ function AdminDashboardContent() {
     try {
       let url = `/api/${model}?page=${page}`;
       if (MODELS[model]?.fetchUrl) {
-        // Para métodos de pago, añade page y limit
         url = `${MODELS[model].fetchUrl}?page=${page}&limit=${PAGE_SIZE}`;
       }
       const response = await authFetch(url);
@@ -130,13 +133,13 @@ function AdminDashboardContent() {
       }
       const result = await response.json();
       const formattedData = result.data?.map((item: any) => {
-        const formattedItem = { ...item };
-        ['paid_at', 'start_time', 'end_time'].forEach((key) => {
-          if (formattedItem[key]) {
-            formattedItem[key] = formatDate(formattedItem[key]);
-          }
-        });
-        return formattedItem;
+        // Para campos, parsear imágenes si es JSON
+        if (model === 'fields' && item.images && typeof item.images === 'string') {
+          try {
+            item.images = JSON.parse(item.images);
+          } catch {}
+        }
+        return item;
       }) ?? [];
       setData(formattedData);
       setTotalPages(result.totalPages || 1);
@@ -192,8 +195,16 @@ function AdminDashboardContent() {
 
   const handleSubmit = async (formData: any) => {
     let model = selectedModel;
-    if (model === 'payments') model = 'payment_methods';
+    if (model === 'payments') return; // No CRUD para métodos de pago
     try {
+      // Validaciones básicas
+      const fields = MODELS[selectedModel].formFields;
+      for (const field of fields) {
+        if (field.required && !formData[field.key]) {
+          setError(`El campo '${field.label}' es obligatorio.`);
+          return;
+        }
+      }
       const method = isEditing ? 'PUT' : 'POST';
       const url = isEditing
         ? `/api/${model}/${modalData.id}`
