@@ -81,7 +81,7 @@ const PaymentMethodContent = () => {
   useEffect(() => {
     if (reservaTemp?.field_id) {
       fetch(`/api/fields/${reservaTemp.field_id}`)
-        .then(r => r.ok ? r.json() : null)
+        .then (r => r.ok ? r.json() : null)
         .then(data => setFieldData(data));
     }
   }, [reservaTemp]);
@@ -115,6 +115,12 @@ const PaymentMethodContent = () => {
       setCardData((prev) => ({ ...prev, expiry: formatted }));
       return;
     }
+    if (name === "cvc") {
+      // Solo permitir máximo 3 dígitos
+      let clean = value.replace(/\D/g, "").slice(0, 3);
+      setCardData((prev) => ({ ...prev, cvc: clean }));
+      return;
+    }
     setCardData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
@@ -128,6 +134,22 @@ const PaymentMethodContent = () => {
     if (selectedOption === "card") {
       if (!cardData.number || !cardData.expiry || !cardData.cvc || !cardData.name) {
         setFormError("Rellena todos los campos de la tarjeta.");
+        return;
+      }
+      if (!/^\d{4} \d{4} \d{4} \d{4}$/.test(cardData.number)) {
+        setFormError("El número de tarjeta debe tener el formato 1234 5678 9012 3456");
+        return;
+      }
+      if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(cardData.expiry)) {
+        setFormError("Fecha de expiración inválida (MM/YY)");
+        return;
+      }
+      if (!/^\d{3}$/.test(cardData.cvc)) {
+        setFormError("El CVC debe tener exactamente 3 dígitos");
+        return;
+      }
+      if (!cardData.name.trim()) {
+        setFormError("El titular de la tarjeta es obligatorio");
         return;
       }
     }
@@ -265,6 +287,21 @@ const PaymentMethodContent = () => {
     setShowConfirmPaymentModal(true);
   };
 
+  // Consulta plazas libres para ese campo, fecha y slot
+  const getAvailableSpots = async (fieldId: number, date: string, slot: number) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`/api/fields/${fieldId}/availability?date=${date}&slot=${slot}`, {
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      });
+      if (!res.ok) return 0;
+      const data = await res.json();
+      return data.availableSpots ?? 0;
+    } catch {
+      return 0;
+    }
+  };
+
   // Handler para confirmar el pago (llama a handleSubmit real y crea la reserva)
   const handleConfirmPayment = async (e?: React.FormEvent) => {
     setShowConfirmPaymentModal(false);
@@ -282,6 +319,14 @@ const PaymentMethodContent = () => {
         setLoading(false);
         return;
       }
+      // Consulta plazas libres antes de reservar
+      const numUsers = reservaTemp.numUsers || reservaTemp.quantity || 1;
+      const spots = await getAvailableSpots(reservaTemp.field_id, reservaTemp.date, reservaTemp.slot);
+      if (numUsers > spots) {
+        setFormError(`No hay suficientes plazas disponibles para este campo, día y slot. Quedan: ${spots}`);
+        setLoading(false);
+        return;
+      }
       let userId = null;
       const token = localStorage.getItem("token");
       if (token) {
@@ -290,17 +335,17 @@ const PaymentMethodContent = () => {
           userId = payload.id || payload.user_id || payload._id || null;
         } catch {}
       }
-      // Construir user_ids con el id del usuario actual
-      const user_ids = userId ? Array(reservaTemp.numUsers || reservaTemp.quantity).fill(userId) : undefined;
+      // El backend espera al menos un usuario en el array user_ids
+      const user_ids = userId ? Array(numUsers).fill(userId) : Array(numUsers).fill(1); // Si no hay login, usa 1
+      const total_price = Number(reservaTemp.total_price); // <-- Asegura que es número
       const reservaPayload = {
         field_id: reservaTemp.field_id,
         date: reservaTemp.date,
         slot: reservaTemp.slot,
-        total_price: reservaTemp.total_price,
+        total_price, // <-- número, no string
         user_ids,
+        quantity: numUsers
       };
-      // Eliminar user_ids si no hay id válido
-      if (!userId) delete reservaPayload.user_ids;
       const reservaRes = await authFetch("/api/reservations", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

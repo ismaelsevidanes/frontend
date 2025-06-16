@@ -29,8 +29,16 @@ function Register() {
       setError('Debe ser un email válido');
       return;
     }
-    if (password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres');
+    if (password.length < 8) {
+      setError('La contraseña debe tener al menos 8 caracteres');
+      return;
+    }
+    if (!/[A-Z]/.test(password)) {
+      setError('La contraseña debe tener al menos una mayúscula');
+      return;
+    }
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      setError('La contraseña debe tener al menos un símbolo');
       return;
     }
     if (password !== confirmPassword) {

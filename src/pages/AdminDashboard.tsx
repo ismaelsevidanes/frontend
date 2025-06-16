@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import './dashboard.css';
 import Pagination from '../shared/components/Pagination';
 import Modal from '../shared/components/Modal';
@@ -129,6 +129,30 @@ function AdminDashboard() {
     }
   };
 
+  function validateField(key: string, value: string) {
+    if (key === 'email') {
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value)) return 'Debe ser un email válido.';
+    }
+    if (key === 'password') {
+      if (value.length < 8) return 'La contraseña debe tener al menos 8 caracteres.';
+      if (!/[A-Z]/.test(value)) return 'Debe tener al menos una mayúscula.';
+      if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) return 'Debe tener al menos un símbolo.';
+    }
+    if (key === 'name' && !value.trim()) return 'El nombre es obligatorio.';
+    if (key === 'price_per_hour' && (isNaN(Number(value)) || Number(value) < 1)) return 'El precio debe ser mayor que 0.';
+    if (key === 'amount' && (isNaN(Number(value)) || Number(value) < 0.01)) return 'El monto debe ser mayor que 0.';
+    if (key === 'reservation_id' && (!value || isNaN(Number(value)) || Number(value) < 1)) return 'Reserva inválida.';
+    if (key === 'field_id' && (!value || isNaN(Number(value)) || Number(value) < 1)) return 'Campo inválido.';
+    if (key === 'user_ids' && (!value || value.split(',').length < 1)) return 'Debe haber al menos un usuario.';
+    if (key === 'start_time' && !value) return 'La fecha/hora de inicio es obligatoria.';
+    if (key === 'end_time' && !value) return 'La fecha/hora de fin es obligatoria.';
+    if (key === 'paid_at' && !value) return 'La fecha de pago es obligatoria.';
+    if (key === 'payment_method' && !value) return 'El método de pago es obligatorio.';
+    if (key === 'type' && value && !['futbol7','futbol11'].includes(value)) return 'Tipo inválido.';
+    if (key === 'role' && value && !['user','admin'].includes(value)) return 'Rol inválido.';
+    return '';
+  }
+
   return (
     <main className="dashboard-container">
       <div className="container">
@@ -183,9 +207,17 @@ function AdminDashboard() {
           onSubmit={async (e) => {
             e.preventDefault();
             setError('');
+            const formDataObj = Object.fromEntries(new FormData(e.target as HTMLFormElement));
+            // Validación frontend antes de enviar
+            for (const key of Object.keys(formDataObj)) {
+              const err = validateField(key, formDataObj[key]);
+              if (err) {
+                setError(err);
+                return;
+              }
+            }
             try {
-              const formData = Object.fromEntries(new FormData(e.target as HTMLFormElement));
-              await handleSubmit(formData);
+              await handleSubmit(formDataObj);
             } catch (err) {
               setError(err instanceof Error ? err.message : 'Error desconocido');
             }
@@ -215,20 +247,10 @@ function AdminDashboard() {
                         defaultValue={modalData[key] || ''}
                         style={{ backgroundColor: '#fff', color: '#888', paddingRight: '2rem' }}
                         required={key === 'name' || key === 'email' || key === 'password'}
-                        pattern={
-                          key === 'email'
-                            ? '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}' // Validación de email
-                            : key === 'password'
-                            ? '.{6,}' // Validación de contraseña
-                            : undefined
-                        }
-                        title={
-                          key === 'email'
-                            ? 'Debe ser un email válido.'
-                            : key === 'password'
-                            ? 'La contraseña debe tener al menos 6 caracteres.'
-                            : undefined
-                        }
+                        onBlur={e => {
+                          const err = validateField(key, e.target.value);
+                          if (err) setError(err);
+                        }}
                       />
                       {key === 'password' && (
                         <span

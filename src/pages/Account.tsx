@@ -50,6 +50,29 @@ const AccountContent: React.FC = () => {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage("");
+    // Validaciones frontend igual que backend
+    if (!form.name.trim()) {
+      setMessage("El nombre es obligatorio");
+      return;
+    }
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email)) {
+      setMessage("Debe ser un email válido");
+      return;
+    }
+    if (form.password && form.password.length > 0) {
+      if (form.password.length < 8) {
+        setMessage("La contraseña debe tener al menos 8 caracteres");
+        return;
+      }
+      if (!/[A-Z]/.test(form.password)) {
+        setMessage("La contraseña debe tener al menos una mayúscula");
+        return;
+      }
+      if (!/[!@#$%^&*(),.?":{}|<>]/.test(form.password)) {
+        setMessage("La contraseña debe tener al menos un símbolo");
+        return;
+      }
+    }
     const token = localStorage.getItem("token");
     if (!token) return;
     const res = await authFetch("/api/users/me", {
