@@ -59,6 +59,42 @@ Este proyecto corresponde al frontend de Pitch Dreamers, desarrollado con React 
 
 ---
 
+# Guía de instalación del frontend (Pitch Dreamers)
+
+Esta guía explica cómo instalar y ejecutar el frontend de Pitch Dreamers en un PC nuevo, desde cero.
+
+## 1. Instalar Node.js
+- Descargar e instalar la última versión LTS desde: [https://nodejs.org/](https://nodejs.org/)
+- Verificar instalación:
+  ```bash
+  node -v
+  npm -v
+  ```
+
+## 2. Clonar el repositorio y preparar el frontend
+- Clonar el repositorio:
+  ```bash
+  git clone https://github.com/ismaelsevidanes/frontend.git
+  cd frontend
+  ```
+- Instalar dependencias:
+  ```bash
+  npm install
+  ```
+
+## 3. Arrancar el frontend
+- Iniciar el servidor de desarrollo:
+  ```bash
+  npm run dev
+  ```
+- El frontend estará disponible en: [http://localhost:5173](http://localhost:5173)
+
+## 4. Conexión con el backend
+- Asegúrate de que el backend esté instalado y corriendo en [http://localhost:3000](http://localhost:3000)
+- Si necesitas instalar el backend, sigue la guía en el archivo [backend/README.md](../backend/README.md) o en el repositorio: [https://github.com/ismaelsevidanes/backend](https://github.com/ismaelsevidanes/backend)
+
+---
+
 ## Estructura del Proyecto
 - **src/features**: Funcionalidades principales del proyecto.
 - **src/shared**: Componentes y utilidades reutilizables.

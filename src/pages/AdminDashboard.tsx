@@ -66,6 +66,7 @@ const MODELS = {
       { key: 'date', label: 'Fecha', required: true, type: 'date' },
       { key: 'slot', label: 'Slot', required: true },
       { key: 'total_price', label: 'Precio', required: true, type: 'number' },
+      { key: 'user_ids', label: 'IDs de usuario (separados por coma)', required: true, type: 'text' },
     ],
     endpoint: 'reservations',
     title: 'Reservas',
@@ -216,6 +217,27 @@ function AdminDashboardContent() {
           return;
         }
       }
+      // Si es reserva, adaptar user_ids y quantities
+      let dataToSend = { ...formData };
+      if (model === 'reservations') {
+        // user_ids: string -> array
+        let userIdsArr: number[] = [];
+        if (typeof formData.user_ids === 'string') {
+          userIdsArr = formData.user_ids
+            .split(',')
+            .map((id: string) => parseInt(id.trim(), 10))
+            .filter((id: number) => !isNaN(id));
+        } else if (Array.isArray(formData.user_ids)) {
+          userIdsArr = formData.user_ids;
+        }
+        if (!userIdsArr.length) {
+          setError('Debes indicar al menos un ID de usuario válido.');
+          return;
+        }
+        dataToSend.user_ids = userIdsArr;
+        // Por defecto, 1 plaza por usuario
+        dataToSend.quantities = userIdsArr.map(() => 1);
+      }
       const method = isEditing ? 'PUT' : 'POST';
       const url = isEditing
         ? `/api/${model}/${modalData.id}`
@@ -223,7 +245,7 @@ function AdminDashboardContent() {
       const response = await authFetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSend),
       });
       if (!response.ok) throw new Error('Error al guardar los datos');
       fetchData(selectedModel, currentPage);

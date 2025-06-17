@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import './Modal.css';
 
+// Componente modal reutilizable. Muestra un overlay y contenido centrado cuando isOpen es true.
+// Cierra al pulsar fuera o Escape. Usa React Portal para renderizar fuera del árbol principal.
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -10,6 +12,7 @@ interface ModalProps {
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
   useEffect(() => {
+    // Permite cerrar el modal con la tecla Escape
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         onClose();
