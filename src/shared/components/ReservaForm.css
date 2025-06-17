@@ -1,0 +1,226 @@
+.field-detail-reservebox {
+  background: none;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.reserva-form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+  padding: 32px 28px 28px 28px;
+  width: 100%;
+  max-width: 370px;
+  margin: 32px auto 0 auto;
+  align-items: stretch;
+  border: 1.5px solid #ececec;
+}
+
+.reserva-form .reserva-pricebox {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.reserva-form .reserva-price {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #222F36;
+  margin-bottom: 0;
+  margin-top: 0;
+  letter-spacing: 0.5px;
+}
+
+.reserva-form .reserva-price-eur {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #888;
+  margin-left: 2px;
+}
+
+.reserva-form .reserva-label {
+  font-weight: 600;
+  color: #003366;
+  margin-bottom: 8px;
+  display: block;
+  text-align: left;
+  width: 100%;
+}
+
+.reserva-form .reserva-slot-group {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.reserva-form .reserva-slot-btn {
+  background: #f5f8fa;
+  border: 2px solid #d0d0d0;
+  border-radius: 8px;
+  padding: 12px 18px;
+  font-size: 1.08rem;
+  color: #003366;
+  cursor: pointer;
+  transition: border 0.2s, background 0.2s;
+  outline: none;
+}
+.reserva-form .reserva-slot-btn.selected,
+.reserva-form .reserva-slot-btn:focus {
+  border: 2px solid #003366;
+  background: #eaf1fb;
+}
+
+.reserva-form .reserva-day-group {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.reserva-form .reserva-day-btn {
+  background: #f5f8fa;
+  border: 2px solid #d0d0d0;
+  border-radius: 8px;
+  padding: 12px 18px;
+  font-size: 1.08rem;
+  color: #003366;
+  cursor: pointer;
+  transition: border 0.2s, background 0.2s;
+  outline: none;
+}
+.reserva-form .reserva-day-btn.selected,
+.reserva-form .reserva-day-btn:focus {
+  border: 2px solid #003366;
+  background: #eaf1fb;
+}
+
+.reserva-form .reserva-users {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+.reserva-form .reserva-users-inputbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 2px;
+}
+
+.reserva-form .reserva-users-btn {
+  background: #f5f8fa;
+  border: 2px solid #d0d0d0;
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  font-size: 1.3rem;
+  color: #003366;
+  cursor: pointer;
+  font-weight: 700;
+  transition: border 0.2s, background 0.2s;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.reserva-form .reserva-users-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.reserva-form .reserva-users-input {
+  width: 60px;
+  border-radius: 8px;
+  padding: 8px;
+  border: 1.5px solid #d0d0d0;
+  font-size: 1.08rem;
+  text-align: center;
+  font-weight: 600;
+  background: #f5f8fa;
+  color: #003366;
+}
+
+.reserva-form .reserva-users-max {
+  font-size: 0.98rem;
+  color: #888;
+  margin-left: 2px;
+  margin-top: 2px;
+}
+
+.reserva-form .reserva-btn {
+  margin-top: 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  background: #003366;
+  color: #fff;
+  padding: 12px 0;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.reserva-form .reserva-btn:disabled {
+  background: #b0b8c1;
+  cursor: not-allowed;
+}
+
+.reserva-form .reserva-error {
+  color: #e74c3c;
+  background: #fdecea;
+  border-radius: 8px;
+  padding: 10px 0;
+  text-align: center;
+  margin-bottom: 10px;
+}
+.reserva-form .reserva-success {
+  color: #2ecc40;
+  background: #eafbe7;
+  border-radius: 8px;
+  padding: 10px 0;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.reserva-users-input::-webkit-outer-spin-button,
+.reserva-users-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.reserva-users-input[type=number] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+@media (max-width: 600px) {
+  .reserva-form {
+    padding: 14px 2vw 14px 2vw;
+    max-width: 95vw;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  .field-detail-reservebox {
+    max-width: 100vw;
+    min-width: 0;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+  .reserva-form .reserva-slot-group,
+  .reserva-form .reserva-day-group {
+    flex-direction: column;
+    gap: 8px;
+  }
+}

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './auth.css';
 
 function Login() {
@@ -10,6 +10,7 @@ function Login() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,7 +37,18 @@ function Login() {
       }
       localStorage.setItem('token', data.token);
       setSuccess(true);
-      if (data.role === 'admin') {
+      // Redirección automática tras login
+      const redirect = localStorage.getItem('redirectAfterLogin');
+      if (redirect) {
+        localStorage.removeItem('redirectAfterLogin');
+        window.location.href = redirect;
+        return;
+      }
+      // Redirigir a la ruta previa si existe (por ejemplo, FieldDetail o PaymentMethod)
+      const from = (location.state as any)?.from;
+      if (from) {
+        navigate(from);
+      } else if (data.role === 'admin') {
         navigate('/admin-dashboard');
       } else {
         navigate('/dashboard');
@@ -48,19 +60,18 @@ function Login() {
 
   return (
     <div className="register-root">
-      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '48px' }}>
+      <div className="register-container">
         <img
           src="/logo.webp"
           alt="Pitch Dreamers"
           className="register-img"
-          style={{ width: 180, height: 180, marginBottom: 32, display: 'block', cursor: 'pointer' }}
-          onClick={() => navigate('/')} // Redirige a la raíz al hacer clic
+          onClick={() => navigate('/')}
         />
-        <div className="register-right" style={{ minWidth: 480, padding: '56px 48px 48px 48px', margin: '0 auto' }}>
+        <div className="register-right">
           <form className="register-form" onSubmit={handleSubmit}>
             <h1 className="register-title">Iniciar Sesión</h1>
             <label>Email o usuario
-              <input type="email" value={email} onChange={e => setEmail(e.target.value)} required style={{ background: '#fff', color: '#111', border: '1px solid #e0e0e0', borderRadius: 8, marginTop: 6, marginBottom: 12, fontSize: '1.08rem', padding: '14px 16px' }} />
+              <input type="email" value={email} onChange={e => setEmail(e.target.value)} required aria-required="true" aria-label="Correo electrónico o usuario" />
             </label>
             <label>Contraseña
               <div className="register-password-wrapper">
@@ -69,7 +80,8 @@ function Login() {
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   required
-                  style={{ background: '#fff', color: '#111', border: '1px solid #e0e0e0', borderRadius: 8, marginTop: 6, marginBottom: 12, fontSize: '1.08rem', padding: '14px 16px', width: '100%' }}
+                  aria-required="true"
+                  aria-label="Contraseña"
                 />
                 <span
                   className="register-password-toggle"
@@ -115,6 +127,23 @@ function Login() {
               <img src="https://www.svgrepo.com/show/452229/instagram-1.svg" alt="Instagram" className="register-social-icon" />
               Iniciar sesión con Instagram
             </button>
+            <div style={{ textAlign: 'center', marginTop: 18 }}>
+              <a
+                href="#"
+                style={{ color: '#1976d2', fontWeight: 600, textDecoration: 'underline', cursor: 'pointer', fontSize: '1.08rem' }}
+                onClick={e => {
+                  e.preventDefault();
+                  const from = (location.state as any)?.from;
+                  if (from) {
+                    navigate('/register', { state: { from } });
+                  } else {
+                    navigate('/register');
+                  }
+                }}
+              >
+                Crear Cuenta Gratis
+              </a>
+            </div>
           </form>
         </div>
       </div>

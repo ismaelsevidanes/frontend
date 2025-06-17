@@ -2,9 +2,9 @@
 export function formatDate(dateString: string): string {
   const date = new Date(dateString);
 
-  // Convert to Madrid timezone (UTC+2)
+  // Format options for 'YYYY-MM-DD HH:mm:ss'
   const options: Intl.DateTimeFormatOptions = {
-    timeZone: 'Europe/Madrid',
+    timeZone: 'UTC',
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',

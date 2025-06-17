@@ -1,41 +1,28 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Header from '../shared/components/Header';
 import Footer from '../shared/components/Footer';
 import '../shared/components/Header.css';
 import '../shared/components/Footer.css';
+import { UserMenuProvider, useUserMenu } from "../shared/components/UserMenuProvider";
+import Breadcrumbs from "../shared/components/Breadcrumbs";
 
-const FAQ: React.FC = () => {
-  const [username, setUsername] = useState<string>("");
-  const [menuOpen, setMenuOpen] = useState(false);
+const FAQContent = () => {
+  const { menuOpen, setMenuOpen, handleLogout } = useUserMenu();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        setUsername(payload.name || payload.email || "Usuario");
-      } catch {
-        setUsername("Usuario");
-      }
-    } else {
-      setUsername("Usuario");
-    }
+    // Lógica de efecto, si es necesaria en el futuro
   }, []);
 
   const handleUserMenu = () => setMenuOpen((open) => !open);
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    window.location.href = "/login";
-  };
 
   return (
     <>
       <Header
-        username={username}
         onUserMenu={handleUserMenu}
         menuOpen={menuOpen}
         handleLogout={handleLogout}
       />
+      <Breadcrumbs />
       <div className="faq-container" style={{ maxWidth: 700, margin: "40px auto", background: "#fff", borderRadius: 16, boxShadow: "0 2px 16px rgba(0,0,0,0.08)", padding: 32 }}>
         <h2 style={{ color: "#003366", marginBottom: 24 }}>Preguntas Frecuentes (FAQ)</h2>
         <div style={{ marginBottom: 18 }}>
@@ -59,5 +46,11 @@ const FAQ: React.FC = () => {
     </>
   );
 };
+
+const FAQ: React.FC = () => (
+  <UserMenuProvider>
+    <FAQContent />
+  </UserMenuProvider>
+);
 
 export default FAQ;

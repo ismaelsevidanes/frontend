@@ -1,0 +1,86 @@
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f4f4f9;
+}
+.admin-main {
+  flex: 1;
+  margin-left: 220px;
+  padding: 2rem 1rem 2rem 2rem;
+  width: 100%;
+  max-width: 1600px;
+}
+@media (max-width: 700px) {
+  .admin-main {
+    margin-left: 0;
+    padding: 1rem;
+  }
+}
+.admin-table-wrapper {
+  overflow-x: auto;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px #0001;
+  margin-bottom: 2rem;
+}
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.admin-table th, .admin-table td {
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid #e0e0e0;
+  text-align: left;
+}
+.admin-table th {
+  background: #e3f0fc;
+  color: #003366;
+  font-weight: 600;
+}
+.admin-table tr:last-child td {
+  border-bottom: none;
+}
+.admin-table button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  margin-right: 8px;
+}
+.admin-modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.admin-modal-content {
+  background: #fff;
+  border-radius: 8px;
+  padding: 2rem;
+  min-width: 320px;
+  max-width: 95vw;
+  box-shadow: 0 2px 16px #0002;
+}
+.admin-modal-field {
+  margin-bottom: 1.2rem;
+}
+.admin-modal-field label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+}
+.admin-modal-field input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #b0b0b0;
+  border-radius: 4px;
+}
+.admin-modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}

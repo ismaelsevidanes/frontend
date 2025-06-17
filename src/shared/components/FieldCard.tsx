@@ -51,8 +51,6 @@ const FieldCard: React.FC<FieldCardProps> = ({
   description,
   type,
   price_per_hour,
-  max_reservations,
-  available_spots,
   images = ["/logo.webp", "/logo.webp", "/logo.webp", "/logo.webp"],
   onReserve,
   hideReserveButton
@@ -76,10 +74,10 @@ const FieldCard: React.FC<FieldCardProps> = ({
       <p className="field-description">{description}</p>
       <div className="field-type">Tipo: <b>{type === 'futbol7' ? 'Fútbol 7' : 'Fútbol 11'}</b></div>
       <div className="field-spots">
-        Plazas disponibles: <b>{typeof available_spots === 'number' ? available_spots : max_reservations}</b> / {max_reservations}
+        Plazas totales: <b>{type === 'futbol7' ? 14 : 22}</b>
       </div>
       <div className="field-bottom">
-        <span className="field-price">{price_per_hour} €/h</span>
+        <span className="field-price">{price_per_hour} €</span>
         {!hideReserveButton && <button className="reserve-btn" onClick={onReserve}>Reservar</button>}
       </div>
     </div>

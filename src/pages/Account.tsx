@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Header from "../shared/components/Header";
 import Footer from "../shared/components/Footer";
+import { authFetch } from "../shared/utils/authFetch";
+import { UserMenuProvider, useUserMenu } from "../shared/components/UserMenuProvider";
 import "../shared/components/Header.css";
 import "../shared/components/Footer.css";
 import "./account.css";
+import Breadcrumbs from "../shared/components/Breadcrumbs";
 
 interface User {
   id: number;
@@ -11,9 +14,9 @@ interface User {
   email: string;
 }
 
-const Account: React.FC = () => {
+const AccountContent: React.FC = () => {
+  const { menuOpen, setMenuOpen, handleLogout, updateUsername } = useUserMenu();
   const [user, setUser] = useState<User | null>(null);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   // Estado para mostrar/ocultar contraseña
@@ -27,13 +30,8 @@ const Account: React.FC = () => {
       window.location.href = "/login";
       return;
     }
-    fetch("/api/users/me", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("No autorizado");
-        return res.json();
-      })
+    authFetch("/api/users/me")
+      .then((res) => res.json())
       .then((data) => {
         setUser(data);
         setForm({ name: data.name, email: data.email, password: "" });
@@ -45,33 +43,6 @@ const Account: React.FC = () => {
       });
   }, []);
 
-  const handleLogout = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      window.location.href = "/login";
-      return;
-    }
-    try {
-      const response = await fetch("/auth/logout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-      });
-      if (response.status === 200 || response.status === 401) {
-        localStorage.removeItem("token");
-        window.location.href = "/login";
-      } else {
-        localStorage.removeItem("token");
-        window.location.href = "/login";
-      }
-    } catch {
-      localStorage.removeItem("token");
-      window.location.href = "/login";
-    }
-  };
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -79,13 +50,35 @@ const Account: React.FC = () => {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage("");
+    // Validaciones frontend igual que backend
+    if (!form.name.trim()) {
+      setMessage("El nombre es obligatorio");
+      return;
+    }
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email)) {
+      setMessage("Debe ser un email válido");
+      return;
+    }
+    if (form.password && form.password.length > 0) {
+      if (form.password.length < 8) {
+        setMessage("La contraseña debe tener al menos 8 caracteres");
+        return;
+      }
+      if (!/[A-Z]/.test(form.password)) {
+        setMessage("La contraseña debe tener al menos una mayúscula");
+        return;
+      }
+      if (!/[!@#$%^&*(),.?":{}|<>]/.test(form.password)) {
+        setMessage("La contraseña debe tener al menos un símbolo");
+        return;
+      }
+    }
     const token = localStorage.getItem("token");
     if (!token) return;
-    const res = await fetch("/api/users/me", {
+    const res = await authFetch("/api/users/me", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         ...(form.name && { name: form.name }),
@@ -94,11 +87,21 @@ const Account: React.FC = () => {
       }),
     });
     if (res.ok) {
+      const data = await res.json();
       setMessage("Datos actualizados correctamente");
       setEditMode(false);
       setForm({ ...form, password: "" });
-      // Actualizar datos en pantalla
-      setUser((u) => u ? { ...u, name: form.name, email: form.email } : null);
+      // Actualiza el estado user y el contexto username inmediatamente
+      const newName = form.name;
+      setUser((u) => u ? { ...u, name: newName, email: form.email } : null);
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        const payload = JSON.parse(atob(data.token.split(".")[1]));
+        updateUsername(payload.name || payload.email || "Usuario");
+      } else {
+        updateUsername(newName);
+      }
+      // Fuerza un rerender del Header (opcional: puedes usar un estado global o contexto para esto si lo necesitas en más sitios)
     } else {
       setMessage("Error al actualizar los datos");
     }
@@ -107,13 +110,13 @@ const Account: React.FC = () => {
   if (loading) return <div>Cargando...</div>;
 
   return (
-    <div className="account-root">
+    <>
       <Header
-        username={user?.name || ''}
         onUserMenu={() => setMenuOpen((open) => !open)}
         menuOpen={menuOpen}
         handleLogout={handleLogout}
       />
+      <Breadcrumbs />
       <main className="account-main">
         <div className="account-card">
           <h2 className="account-title">Mi Cuenta</h2>
@@ -188,8 +191,14 @@ const Account: React.FC = () => {
         </div>
       </main>
       <Footer />
-    </div>
+    </>
   );
 };
+
+const Account: React.FC = () => (
+  <UserMenuProvider>
+    <AccountContent />
+  </UserMenuProvider>
+);
 
 export default Account;

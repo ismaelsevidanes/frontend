@@ -1,68 +1,176 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './dashboard.css';
 import Pagination from '../shared/components/Pagination';
-import Modal from '../shared/components/Modal';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import { formatDate } from '../shared/utils/dateUtils';
+import { authFetch } from '../shared/utils/authFetch';
+import { useNavigate } from 'react-router-dom';
+import AdminSidebar from '../admin/AdminSidebar';
+import AdminTable from '../admin/AdminTable';
+import AdminModalForm from '../admin/AdminModalForm';
+import AdminModal from '../admin/AdminModal';
+import { AdminProvider, useAdmin } from '../admin/AdminContext';
 
-function AdminDashboard() {
+// Configuración de modelos centralizada
+const MODELS: Record<string, {
+  columns: any[];
+  formFields: any[];
+  endpoint: string;
+  title: string;
+  fetchUrl?: string;
+  readOnly?: boolean;
+}> = {
+  users: {
+    columns: [
+      { key: 'id', label: 'ID' },
+      { key: 'name', label: 'Nombre' },
+      { key: 'email', label: 'Email' },
+      { key: 'role', label: 'Rol' },
+    ],
+    formFields: [
+      { key: 'name', label: 'Nombre', required: true },
+      { key: 'email', label: 'Email', required: true, type: 'email' },
+      { key: 'password', label: 'Contraseña', required: true, type: 'password' },
+      { key: 'role', label: 'Rol', required: true },
+    ],
+    endpoint: 'users',
+    title: 'Usuarios',
+  },
+  fields: {
+    columns: [
+      { key: 'id', label: 'ID' },
+      { key: 'name', label: 'Nombre' },
+      { key: 'type', label: 'Tipo' },
+      { key: 'description', label: 'Descripción' },
+      { key: 'address', label: 'Dirección' },
+      { key: 'location', label: 'Localidad' },
+      { key: 'price_per_hour', label: 'Precio/hora' },
+      { key: 'images', label: 'Imágenes' },
+    ],
+    formFields: [
+      { key: 'name', label: 'Nombre', required: true },
+      { key: 'type', label: 'Tipo', required: true },
+      { key: 'description', label: 'Descripción', required: true },
+      { key: 'address', label: 'Dirección', required: true },
+      { key: 'location', label: 'Localidad', required: true },
+      { key: 'price_per_hour', label: 'Precio/hora', required: true, type: 'number' },
+      { key: 'images', label: 'Imágenes (JSON)', required: false },
+    ],
+    endpoint: 'fields',
+    title: 'Campos',
+  },
+  reservations: {
+    columns: [
+      { key: 'id', label: 'ID' },
+      { key: 'field_id', label: 'Campo' },
+      { key: 'start_time', label: 'Inicio' },
+      { key: 'end_time', label: 'Fin' },
+      { key: 'slot', label: 'Slot' },
+      { key: 'total_price', label: 'Precio' },
+      { key: 'status', label: 'Estado' },
+    ],
+    formFields: [
+      { key: 'field_id', label: 'Campo', required: true },
+      { key: 'date', label: 'Fecha', required: true, type: 'date' },
+      { key: 'slot', label: 'Slot', required: true },
+      { key: 'total_price', label: 'Precio', required: true, type: 'number' },
+      { key: 'user_ids', label: 'IDs de usuario (separados por coma)', required: true, type: 'text' },
+    ],
+    endpoint: 'reservations',
+    title: 'Reservas',
+  },
+  payments: {
+    columns: [
+      { key: 'id', label: 'ID' },
+      { key: 'user_id', label: 'Usuario', render: (row: any) => row.user_id || '-' },
+      { key: 'type', label: 'Tipo' },
+      { key: 'last4', label: 'Últimos 4' },
+    ],
+    formFields: [],
+    endpoint: 'payments',
+    title: 'Métodos de Pago',
+    fetchUrl: '/api/payments/method/all',
+    readOnly: true,
+  },
+};
+
+const PAGE_SIZE = 10;
+
+function AdminDashboardContent() {
+  const { selectedModel } = useAdmin();
   const [data, setData] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedModel, setSelectedModel] = useState('');
   const [totalPages, setTotalPages] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalData, setModalData] = useState<any>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [error, setError] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const navigate = useNavigate();
 
+  // Protección de ruta
   useEffect(() => {
-    if (selectedModel) {
-      fetchData(selectedModel, currentPage);
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+      return;
     }
-  }, [selectedModel, currentPage]);
-
-  const fetchData = async (model: string, page: number = 1) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(
-        `/api/${model}?page=${page}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      if (payload.role !== 'admin') {
+        navigate('/dashboard');
+        return;
+      }
+    } catch {
+      navigate('/login');
+    }
+  }, [navigate]);
+
+  // Fetch de datos SOLO cuando cambia el modelo o la página
+  const fetchData = useCallback(async (model: string, page: number = 1) => {
+    try {
+      let url = `/api/${model}?page=${page}`;
+      if (MODELS[model]?.fetchUrl) {
+        url = `${MODELS[model].fetchUrl}?page=${page}&limit=${PAGE_SIZE}`;
+      }
+      const response = await authFetch(url);
       if (!response.ok) {
         throw new Error('Error al obtener los datos');
       }
       const result = await response.json();
-
-      // Format specific date fields before setting data
-      const formattedData = result.data.map((item: any) => {
-        const formattedItem = { ...item };
-        ['paid_at', 'start_time', 'end_time'].forEach((key) => {
-          if (formattedItem[key]) {
-            formattedItem[key] = formatDate(formattedItem[key]);
-          }
-        });
-        return formattedItem;
-      });
-
-      setData(formattedData || result);
-      setTotalPages(result.totalPages || 10);
+      const formattedData = result.data?.map((item: any) => {
+        // Para campos, parsear imágenes si es JSON
+        if (model === 'fields' && item.images && typeof item.images === 'string') {
+          try {
+            item.images = JSON.parse(item.images);
+          } catch {}
+        }
+        return item;
+      }) ?? [];
+      setData(formattedData);
+      setTotalPages(result.totalPages || 1);
     } catch (error) {
-      console.error(error);
+      setData([]);
     }
-  };
+  }, []);
 
-  const handleModelChange = (model: string) => {
-    setSelectedModel(model);
-    setCurrentPage(1);
-  };
+  useEffect(() => {
+    setCurrentPage(1); // Reset page on model change
+  }, [selectedModel]);
+
+  useEffect(() => {
+    fetchData(selectedModel, currentPage);
+  }, [selectedModel, currentPage, fetchData]);
 
   const handleOpenModal = (item: any = null) => {
     setIsEditing(!!item);
+    // Si es edición de reserva, formatear la fecha correctamente para el input type=date
+    if (item && selectedModel === 'reservations' && item.date) {
+      // Asegura formato yyyy-MM-dd
+      const dateObj = new Date(item.date);
+      const yyyy = dateObj.getFullYear();
+      const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const dd = String(dateObj.getDate()).padStart(2, '0');
+      item.date = `${yyyy}-${mm}-${dd}`;
+    }
     setModalData(item);
     setIsModalOpen(true);
   };
@@ -72,176 +180,184 @@ function AdminDashboard() {
     setModalData(null);
   };
 
-  const handleDelete = async (id: number) => {
-    if (window.confirm('¿Estás seguro de que deseas eliminar este registro?')) {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(
-          `/api/${selectedModel}/${id}`,
-          {
-            method: 'DELETE',
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (!response.ok) {
-          throw new Error('Error al eliminar el registro');
-        }
-        fetchData(selectedModel, currentPage);
-      } catch (error) {
-        console.error(error);
+  // Nuevo: abrir modal de confirmación antes de eliminar
+  const handleAskDelete = (id: number) => {
+    setDeleteId(id);
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (deleteId == null) return;
+    let model = selectedModel;
+    try {
+      let url = `/api/${model}/${deleteId}`;
+      if (model === 'payments') {
+        url = `/api/payments/method?id=${deleteId}`;
       }
+      const response = await authFetch(
+        url,
+        { method: 'DELETE' }
+      );
+      if (!response.ok) throw new Error('Error al eliminar el registro');
+      fetchData(selectedModel, currentPage);
+    } catch (error) {
+      setShowDeleteModal(false);
+      setDeleteId(null);
+    } finally {
+      setShowDeleteModal(false);
+      setDeleteId(null);
     }
   };
 
   const handleSubmit = async (formData: any) => {
+    let model = selectedModel;
+    if (model === 'payments') return; // No CRUD para métodos de pago
     try {
-      const token = localStorage.getItem('token');
+      // Validaciones básicas
+      const fields = MODELS[selectedModel].formFields;
+      for (const field of fields) {
+        if (field.required && !formData[field.key]) {
+          return;
+        }
+      }
+      // Si es reserva, adaptar user_ids y quantities
+      let dataToSend = { ...formData };
+      if (model === 'reservations') {
+        // user_ids: string -> array
+        let userIdsArr: number[] = [];
+        if (typeof formData.user_ids === 'string') {
+          userIdsArr = formData.user_ids
+            .split(',')
+            .map((id: string) => parseInt(id.trim(), 10))
+            .filter((id: number) => !isNaN(id));
+        } else if (Array.isArray(formData.user_ids)) {
+          userIdsArr = formData.user_ids;
+        }
+        if (!userIdsArr.length) {
+          return;
+        }
+        dataToSend.user_ids = userIdsArr;
+        // Por defecto, 1 plaza por usuario
+        dataToSend.quantities = userIdsArr.map(() => 1);
+      }
       const method = isEditing ? 'PUT' : 'POST';
       const url = isEditing
-        ? `/api/${selectedModel}/${modalData.id}`
-        : `/api/${selectedModel}`;
-
-      const response = await fetch(url, {
+        ? `/api/${model}/${modalData.id}`
+        : `/api/${model}`;
+      const response = await authFetch(url, {
         method,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(formData),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dataToSend),
       });
-
-      if (!response.ok) {
-        throw new Error('Error al guardar los datos');
-      }
-
+      if (!response.ok) throw new Error('Error al guardar los datos');
       fetchData(selectedModel, currentPage);
       handleCloseModal();
     } catch (error) {
-      console.error(error);
-      throw error;
     }
   };
 
+  // --- UI ---
   return (
-    <main className="dashboard-container">
-      <div className="container">
-        <h1>Dashboard de Administrador</h1>
-        <nav className="dashboard-nav">
-          <button onClick={() => handleModelChange('users')}>Usuarios</button>
-          <button onClick={() => handleModelChange('fields')}>Campos</button>
-          <button onClick={() => handleModelChange('reservations')}>Reservas</button>
-          <button onClick={() => handleModelChange('payments')}>Pagos</button>
-        </nav>
-        {data.length > 0 ? (
-          <div className="table-container">
-            <table className="dashboard-table">
-              <thead>
-                <tr>
-                  {Object.keys(data[0]).map((key) => (
-                    <th key={key}>{key}</th>
-                  ))}
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.map((item, index) => (
-                  <tr key={index}>
-                    {Object.values(item).map((value, i) => (
-                      <td key={i}>{String(value)}</td>
-                    ))}
-                    <td>
-                      <button onClick={() => handleOpenModal(item)}>Editar</button>
-                      <button className="delete" onClick={() => handleDelete(item.id)}>Eliminar</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <div className="dashboard-pagination">
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={(page) => setCurrentPage(page)}
-              />
-            </div>
-          </div>
-        ) : (
-          <p>Selecciona una categoría para ver los datos.</p>
-        )}
-      </div>
-
-      <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
-        <h2>Modificar Datos</h2>
-        <form
-          onSubmit={async (e) => {
-            e.preventDefault();
-            setError('');
-            try {
-              const formData = Object.fromEntries(new FormData(e.target as HTMLFormElement));
-              await handleSubmit(formData);
-            } catch (err) {
-              setError(err instanceof Error ? err.message : 'Error desconocido');
-            }
-          }}
+    <div style={{ display: 'flex', minHeight: '100vh', background: '#f8f8f4' }}>
+      <AdminSidebar />
+      <main
+        className="dashboard-container"
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh',
+          background: 'transparent',
+          padding: 0,
+        }}
+      >
+        <h1 style={{ textAlign: 'center', marginTop: 0 }}>{MODELS[selectedModel].title}</h1>
+        <button
+          className="admin-modal-form-btn"
+          style={{ marginBottom: 24, marginTop: 8 }}
+          onClick={() => { setModalData(null); setIsEditing(false); setIsModalOpen(true); }}
         >
-          {error && <p style={{ color: 'red' }}>{error}</p>}
-          {modalData &&
-            Object.keys(data[0] || {})
-              .filter((key) => key !== 'id' && key !== 'created_at' && key !== 'updated_at')
-              .map((key) => (
-                <div key={key} style={{ position: 'relative' }}>
-                  <label>{key}:</label>
-                  {key === 'role' ? (
-                    <select
-                      name="role"
-                      defaultValue={modalData[key]}
-                      style={{ backgroundColor: '#fff', color: '#000' }}
-                    >
-                      <option value="user">User</option>
-                      <option value="admin">Admin</option>
-                    </select>
-                  ) : (
-                    <>
-                      <input
-                        name={key}
-                        type={key === 'password' && !showPassword ? 'password' : 'text'}
-                        defaultValue={modalData[key] || ''}
-                        style={{ backgroundColor: '#fff', color: '#888', paddingRight: '2rem' }}
-                        required={key === 'name' || key === 'email' || key === 'password'}
-                        pattern={
-                          key === 'email'
-                            ? '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}' // Validación de email
-                            : key === 'password'
-                            ? '.{6,}' // Validación de contraseña
-                            : undefined
-                        }
-                        title={
-                          key === 'email'
-                            ? 'Debe ser un email válido.'
-                            : key === 'password'
-                            ? 'La contraseña debe tener al menos 6 caracteres.'
-                            : undefined
-                        }
-                      />
-                      {key === 'password' && (
-                        <span
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="password-toggle"
-                        >
-                          {showPassword ? <FaEyeSlash /> : <FaEye />}
-                        </span>
-                      )}
-                    </>
-                  )}
-                </div>
-              ))}
-          <button type="submit">Guardar</button>
-        </form>
-      </Modal>
-    </main>
+          Crear {MODELS[selectedModel].title.slice(0, -1)}
+        </button>
+        <div style={{ width: '100%', maxWidth: 900, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <AdminTable
+            columns={MODELS[selectedModel].columns}
+            data={data}
+            onEdit={row => handleOpenModal(row)}
+            onDelete={row => handleAskDelete(row.id)}
+            loading={false}
+          />
+          <div className="dashboard-pagination" style={{ margin: '24px 0 0 0' }}>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </div>
+        </div>
+        {/* Modal de confirmación de eliminar */}
+        <AdminModal open={showDeleteModal} onClose={() => setShowDeleteModal(false)} title="Eliminar registro">
+          <div style={{ color: '#222', marginBottom: 28, fontSize: 16 }}>
+            ¿Seguro que deseas eliminar este registro?
+          </div>
+          <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
+            <button
+              onClick={handleConfirmDelete}
+              style={{
+                background: '#113366',
+                color: '#fff',
+                border: 'none',
+                borderRadius: 8,
+                padding: '0.7rem 2.2rem',
+                fontWeight: 600,
+                fontSize: 16,
+                cursor: 'pointer',
+                boxShadow: '0 2px 8px rgba(30,42,60,0.08)',
+                transition: 'background 0.2s',
+              }}
+            >Eliminar</button>
+            <button
+              onClick={() => setShowDeleteModal(false)}
+              style={{
+                background: '#fff',
+                color: '#113366',
+                border: '1.5px solid #113366',
+                borderRadius: 8,
+                padding: '0.7rem 2.2rem',
+                fontWeight: 600,
+                fontSize: 16,
+                cursor: 'pointer',
+                boxShadow: '0 2px 8px rgba(30,42,60,0.04)',
+                transition: 'background 0.2s',
+              }}
+            >Cancelar</button>
+          </div>
+        </AdminModal>
+        {/* Modal de edición/creación */}
+        <AdminModal open={isModalOpen} onClose={handleCloseModal} title={isEditing ? `Editar ${MODELS[selectedModel].title.slice(0, -1)}` : `Crear ${MODELS[selectedModel].title.slice(0, -1)}`} width={420}>
+          <AdminModalForm
+            open={isModalOpen}
+            onClose={handleCloseModal}
+            onSubmit={async values => {
+              await handleSubmit(values);
+              setIsModalOpen(false);
+            }}
+            initialValues={modalData || {}}
+            fields={MODELS[selectedModel].formFields}
+            title={isEditing ? `Editar ${MODELS[selectedModel].title.slice(0, -1)}` : `Crear ${MODELS[selectedModel].title.slice(0, -1)}`}
+          />
+        </AdminModal>
+      </main>
+    </div>
   );
 }
+
+const AdminDashboard: React.FC = () => (
+  <AdminProvider>
+    <AdminDashboardContent />
+  </AdminProvider>
+);
 
 export default AdminDashboard;

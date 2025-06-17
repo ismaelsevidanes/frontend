@@ -1,0 +1,109 @@
+.admin-table-wrapper {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px 0 rgba(0,0,0,0.08);
+  padding: 2rem 1.5rem;
+  margin-bottom: 2rem;
+  overflow-x: auto;
+  width: 100%;
+  min-width: 0;
+  max-width: 100vw;
+  padding-bottom: 18px;
+}
+.admin-table {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #fff;
+  font-size: 1.05rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(30,30,30,0.07);
+  overflow: hidden;
+  table-layout: auto;
+}
+.admin-table th, .admin-table td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 1rem;
+  vertical-align: top;
+  word-break: break-word;
+  white-space: pre-line;
+  min-width: 120px;
+  max-width: 600px;
+}
+.admin-table th {
+  background: #113366;
+  color: #fff;
+  font-weight: 700;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.admin-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e0e6ed;
+  background: #fff;
+  color: #1e2a3c;
+}
+.admin-table tr.even td {
+  background: #f7f9fc;
+}
+.admin-table tr.odd td {
+  background: #fff;
+}
+.admin-table-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+.action-btn {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 1.15rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.action-btn.edit {
+  color: #1976d2;
+}
+.action-btn.edit:hover {
+  background: #e3f0fc;
+}
+.action-btn.delete {
+  color: #c62828;
+}
+.action-btn.delete:hover {
+  background: #fdeaea;
+}
+.action-btn.detail {
+  color: #333;
+}
+.action-btn.detail:hover {
+  background: #f0f0f0;
+}
+@media (max-width: 1200px) {
+  .admin-table th, .admin-table td {
+    font-size: 0.97rem;
+    max-width: 320px;
+    padding: 10px 8px;
+  }
+}
+@media (max-width: 900px) {
+  .admin-table th, .admin-table td {
+    font-size: 0.93rem;
+    max-width: 180px;
+    padding: 8px 6px;
+  }
+}
+@media (max-width: 700px) {
+  .admin-table th, .admin-table td {
+    padding: 0.5rem 0.3rem;
+    font-size: 0.95rem;
+  }
+  .admin-table-wrapper {
+    padding: 1rem 0.2rem;
+  }
+}

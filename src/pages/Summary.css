@@ -1,0 +1,280 @@
+/* Ticket tipo festival/entrada */
+
+.summary-ticket-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+}
+
+/* Tamaño fijo para exportar bonito */
+.festival-ticket.export-pdf {
+  width: 700px !important;
+  height: 350px !important;
+  min-width: 700px !important;
+  min-height: 350px !important;
+  max-width: 700px !important;
+  max-height: 350px !important;
+  border-radius: 18px !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.10) !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+.festival-ticket {
+  display: flex;
+  flex-direction: row;
+  background: #4b1fa7;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+  min-width: 700px;
+  max-width: 700px;
+  width: 700px;
+  height: 350px;
+  max-height: 350px;
+  min-height: 350px;
+  overflow: hidden;
+  position: relative;
+  font-family: 'Montserrat', Arial, sans-serif;
+  border: none;
+}
+.ticket-barcode {
+  background: #fff;
+  width: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-top-left-radius: 18px;
+  border-bottom-left-radius: 18px;
+  position: relative;
+  z-index: 2;
+}
+.ticket-barcode.ticket-barcode-white {
+  background: #fff;
+  width: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-top-left-radius: 18px;
+  border-bottom-left-radius: 18px;
+  position: relative;
+  z-index: 2;
+}
+.barcode-vertical {
+  width: 32px;
+  height: 120px;
+  margin: 18px 0 8px 0;
+  border-radius: 4px;
+  display: block;
+}
+.barcode-number {
+  font-size: 0.85rem;
+  color: #fff;
+  letter-spacing: 2px;
+  margin-bottom: 18px;
+  text-align: center;
+}
+.barcode-number-black {
+  color: #111;
+}
+.festival-ticket-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #003366;
+  border-top-right-radius: 18px;
+  border-bottom-right-radius: 18px;
+  padding: 1.5rem 1.5rem 1.2rem 1.5rem;
+  color: #fff;
+  position: relative;
+  justify-content: flex-start;
+}
+.festival-title {
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: #fff;
+  margin: 0 0 0.8rem 0;
+  text-shadow: 0 2px 8px #0002;
+}
+.festival-subtitle {
+  font-size: 1.1rem;
+  color: #f85ca2;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+.festival-ticket-body {
+  margin-bottom: 1.2rem;
+}
+.festival-row {
+  font-size: 1.08rem;
+  margin-bottom: 0.4rem;
+  color: #fff;
+}
+.festival-ticket-footer {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+.ticket-footer-outside {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+.summary-ticket-btn {
+  padding: 0.7rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.summary-ticket-btn.download {
+  background: #003366;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.7rem 2.2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.summary-ticket-btn.download:hover {
+  background: #0050b3;
+}
+.ticket-url-vertical {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 28px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top-right-radius: 18px;
+  border-bottom-right-radius: 18px;
+  padding: 0;
+}
+.ticket-url-vertical span {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  color: #003366;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-align: center;
+}
+@media (max-width: 700px) {
+  .festival-ticket {
+    min-width: 90vw;
+    flex-direction: column;
+    max-width: 98vw;
+    height: auto;
+  }
+  .ticket-barcode {
+    flex-direction: row;
+    width: 100%;
+    height: 60px;
+    border-radius: 18px 18px 0 0;
+    justify-content: flex-start;
+    align-items: center;
+    background: #fff;
+  }
+  .barcode-vertical {
+    width: 80px;
+    height: 32px;
+    margin: 0 18px 0 8px;
+  }
+  .ticket-url-vertical {
+    width: 100%;
+    height: 28px;
+    right: unset;
+    left: 0;
+    top: unset;
+    bottom: 0;
+    border-radius: 0 0 18px 18px;
+    flex-direction: row;
+    writing-mode: unset;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .ticket-url-vertical span {
+    writing-mode: unset;
+    transform: unset;
+    font-size: 0.9rem;
+  }
+  .festival-ticket-content {
+    border-radius: 0 0 18px 18px;
+    padding: 1.2rem 0.7rem 1rem 0.7rem;
+  }
+  .festival-title {
+    font-size: 1.1rem;
+  }
+  .summary-ticket-btn {
+    font-size: 0.95rem;
+    padding: 0.6rem 1rem;
+  }
+  .ticket-footer-outside {
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1.2rem;
+  }
+}
+@media print {
+  @page {
+    size: 210mm 90mm;
+    margin: 0;
+    background: transparent;
+  }
+  html, body {
+    background: transparent !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 210mm !important;
+    height: 90mm !important;
+    box-shadow: none !important;
+  }
+  header, .user-dashboard-header, .user-dashboard-header-left, .user-dashboard-header-right,
+  footer, .dashboard-footer, .summary-ticket-btn, .festival-ticket-footer {
+    display: none !important;
+  }
+  .dashboard-layout, .dashboard-main, .summary-main-center, .summary-ticket-container {
+    background: transparent !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 210mm !important;
+    height: 90mm !important;
+    min-height: 0 !important;
+    min-width: 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+  .festival-ticket {
+    box-shadow: none !important;
+    margin: 0 !important;
+    position: static !important;
+    width: 210mm !important;
+    height: 90mm !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-width: none !important;
+    max-height: none !important;
+    border-radius: 0 !important;
+    transform: none !important;
+  }
+  .ticket-barcode {
+    border-radius: 0 !important;
+  }
+  .festival-ticket-content {
+    border-radius: 0 !important;
+    padding: 18px 18px 12px 18px !important;
+  }
+}

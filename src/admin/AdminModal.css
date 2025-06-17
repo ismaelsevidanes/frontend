@@ -1,0 +1,42 @@
+.admin-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(30, 42, 60, 0.25);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-modal-box {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(30,42,60,0.18);
+  padding: 2.5rem 2.5rem 2rem 2.5rem;
+  min-width: 340px;
+  max-width: 90vw;
+  text-align: center;
+  position: relative;
+}
+
+.admin-modal-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: #1e2a3c;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.admin-modal-title {
+  color: #1e2a3c;
+  font-weight: 700;
+  font-size: 22px;
+  margin-bottom: 12px;
+}

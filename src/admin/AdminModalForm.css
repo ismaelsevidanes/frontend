@@ -1,0 +1,62 @@
+.admin-modal-form-btn {
+  background: #113366;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.7rem 2.2rem;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  margin: 0 8px;
+  box-shadow: 0 2px 8px rgba(30,42,60,0.08);
+  transition: background 0.2s;
+}
+.admin-modal-form-btn:disabled {
+  background: #bfc8d6;
+  color: #fff;
+  cursor: not-allowed;
+}
+.admin-modal-form-btn.cancel {
+  background: #fff;
+  color: #113366;
+  border: 1.5px solid #113366;
+  box-shadow: 0 2px 8px rgba(30,42,60,0.04);
+}
+.admin-modal-field {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 18px;
+  width: 100%;
+}
+.admin-modal-field label {
+  font-size: 1rem;
+  color: #1e2a3c;
+  font-weight: 500;
+  margin-bottom: 6px;
+  margin-left: 2px;
+}
+.admin-modal-field input {
+  width: 260px;
+  max-width: 100%;
+  padding: 0.55rem 0.9rem;
+  border: 1.5px solid #bfc8d6;
+  border-radius: 7px;
+  font-size: 1rem;
+  color: #1e2a3c;
+  background: #f8fafd;
+  margin-bottom: 2px;
+  transition: border 0.18s, box-shadow 0.18s;
+  outline: none;
+  box-shadow: none;
+}
+.admin-modal-field input:focus {
+  border: 1.5px solid #113366;
+  box-shadow: 0 0 0 2px #eaf1fa;
+}
+.admin-modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 18px;
+}

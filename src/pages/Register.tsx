@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './auth.css';
 
 function Register() {
@@ -14,6 +14,7 @@ function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,8 +29,16 @@ function Register() {
       setError('Debe ser un email válido');
       return;
     }
-    if (password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres');
+    if (password.length < 8) {
+      setError('La contraseña debe tener al menos 8 caracteres');
+      return;
+    }
+    if (!/[A-Z]/.test(password)) {
+      setError('La contraseña debe tener al menos una mayúscula');
+      return;
+    }
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      setError('La contraseña debe tener al menos un símbolo');
       return;
     }
     if (password !== confirmPassword) {
@@ -48,8 +57,21 @@ function Register() {
         return;
       }
       setSuccess(true);
-      // Redirigir siempre al dashboard de usuario
-      if (data.role === 'admin') {
+      // Login automático tras registro
+      const loginResponse = await fetch('/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const loginData = await loginResponse.json();
+      if (loginResponse.ok && loginData.token) {
+        localStorage.setItem('token', loginData.token);
+      }
+      // Redirigir a la ruta previa si existe (por ejemplo, FieldDetail o PaymentMethod)
+      const from = (location.state as any)?.from;
+      if (from) {
+        navigate(from);
+      } else if (data.role === 'admin') {
         navigate('/admin-dashboard');
       } else {
         navigate('/dashboard');
@@ -73,8 +95,7 @@ function Register() {
           <div className="register-benefits">
             <h4>Ventajas al Registrarte</h4>
             <ul>
-              <li>Lorem ipsum dolor sit amet consectetur</li>
-              <li>Lorem ipsum dolor sit amet consectetur</li>
+              <li>Facilidad de navegacion sin anuncios</li>
               <li>Puedes Crear un Perfil completamente Único</li>
               <li>¡Es Completamente gratis!</li>
             </ul>
@@ -84,10 +105,10 @@ function Register() {
           <form className="register-form" onSubmit={handleSubmit}>
             <h1 className="register-title">Registrarse</h1>
             <label>Email
-              <input type="email" value={email} onChange={e => setEmail(e.target.value)} required style={{ background: '#fff' }} />
+              <input type="email" value={email} onChange={e => setEmail(e.target.value)} required aria-required="true" aria-label="Correo electrónico" />
             </label>
             <label>Usuario
-              <input type="text" value={username} onChange={e => setUsername(e.target.value)} required style={{ background: '#fff' }} />
+              <input type="text" value={username} onChange={e => setUsername(e.target.value)} required aria-required="true" aria-label="Usuario" />
             </label>
             <label>Contraseña
               <div className="register-password-wrapper">
@@ -96,7 +117,8 @@ function Register() {
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   required
-                  style={{ background: '#fff' }}
+                  aria-required="true"
+                  aria-label="Contraseña"
                 />
                 <span
                   className="register-password-toggle"
@@ -126,7 +148,8 @@ function Register() {
                   value={confirmPassword}
                   onChange={e => setConfirmPassword(e.target.value)}
                   required
-                  style={{ background: '#fff' }}
+                  aria-required="true"
+                  aria-label="Confirmar contraseña"
                 />
                 <span
                   className="register-password-toggle"
@@ -180,6 +203,25 @@ function Register() {
               <img src="https://www.svgrepo.com/show/452229/instagram-1.svg" alt="Instagram" className="register-social-icon" />
               Registrarse con Instagram
             </button>
+            <div style={{ textAlign: 'center', marginTop: 18 }}>
+              <span>¿Ya tienes una cuenta?{' '}
+                <a
+                  href="#"
+                  style={{ color: '#1976d2', fontWeight: 600, textDecoration: 'underline', cursor: 'pointer' }}
+                  onClick={e => {
+                    e.preventDefault();
+                    const from = (location.state as any)?.from;
+                    if (from) {
+                      navigate('/login', { state: { from } });
+                    } else {
+                      navigate('/login');
+                    }
+                  }}
+                >
+                  Inicia sesión
+                </a>
+              </span>
+            </div>
           </form>
         </div>
       </div>

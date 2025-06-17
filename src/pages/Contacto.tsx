@@ -1,35 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { UserMenuProvider, useUserMenu } from "../shared/components/UserMenuProvider";
 import Header from '../shared/components/Header';
 import Footer from '../shared/components/Footer';
+import Breadcrumbs from "../shared/components/Breadcrumbs";
 import '../shared/components/Header.css';
 import '../shared/components/Footer.css';
 import './contacto.css';
 
-const Contacto: React.FC = () => {
+const ContactoContent = () => {
+  const { menuOpen, setMenuOpen, handleLogout } = useUserMenu();
   const [form, setForm] = useState({ nombre: "", email: "", mensaje: "" });
   const [enviado, setEnviado] = useState(false);
-  const [username, setUsername] = useState<string>("");
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        setUsername(payload.name || payload.email || "Usuario");
-      } catch {
-        setUsername("Usuario");
-      }
-    } else {
-      setUsername("Usuario");
-    }
-  }, []);
 
   const handleUserMenu = () => setMenuOpen((open) => !open);
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    window.location.href = "/login";
-  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -43,11 +26,11 @@ const Contacto: React.FC = () => {
   return (
     <>
       <Header
-        username={username}
         onUserMenu={handleUserMenu}
         menuOpen={menuOpen}
         handleLogout={handleLogout}
       />
+      <Breadcrumbs />
       <div className="contacto-container">
         <h2 className="contacto-title">Contactar</h2>
         {enviado ? (
@@ -71,5 +54,11 @@ const Contacto: React.FC = () => {
     </>
   );
 };
+
+const Contacto: React.FC = () => (
+  <UserMenuProvider>
+    <ContactoContent />
+  </UserMenuProvider>
+);
 
 export default Contacto;

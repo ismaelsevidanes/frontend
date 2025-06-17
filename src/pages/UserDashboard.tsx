@@ -8,6 +8,8 @@ import FieldCard from "../shared/components/FieldCard";
 import FieldFilters from "../shared/components/FieldFilters";
 import Pagination from "../shared/components/Pagination"; // Asegúrate de que la ruta sea correcta
 import { useNavigate } from "react-router-dom";
+import { authFetch } from "../shared/utils/authFetch";
+import { UserMenuProvider, useUserMenu } from "../shared/components/UserMenuProvider";
 
 interface Field {
   id: number;
@@ -22,7 +24,8 @@ interface Field {
   available_spots: number;
 }
 
-const UserDashboard: React.FC = () => {
+const UserDashboardContent: React.FC = () => {
+  const { menuOpen, setMenuOpen, handleLogout } = useUserMenu();
   const [filteredFields, setFilteredFields] = useState<Field[]>([]);
   const [search, setSearch] = useState("");
   const [location, setLocation] = useState("");
@@ -30,11 +33,10 @@ const UserDashboard: React.FC = () => {
   const [type, setType] = useState<string>("");
   const [leastReserved, setLeastReserved] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
-  const [username, setUsername] = useState<string>("");
-  const [menuOpen, setMenuOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
   const navigate = useNavigate();
   // Nueva función para construir la query de filtros y pedir al backend
   const fetchFields = async (showLoading = false, page = currentPage) => {
@@ -46,10 +48,11 @@ const UserDashboard: React.FC = () => {
     if (type) params.append("type", type);
     if (leastReserved) params.append("least_reserved", "true");
     params.append("page", page.toString());
-    const res = await fetch(`/api/fields?${params.toString()}`);
+    const res = await authFetch(`/api/fields?${params.toString()}`);
     const data = await res.json();
     setFilteredFields(data.data || []);
     setTotalPages(data.totalPages || 1);
+    setTotalItems(data.totalItems || (data.data ? data.data.length : 0));
     if (showLoading) setLoading(false);
   };
 
@@ -90,55 +93,9 @@ const UserDashboard: React.FC = () => {
     // eslint-disable-next-line
   }, [type, leastReserved]);
 
-  useEffect(() => {
-    // Obtener el nombre del usuario del token o localStorage
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        setUsername(payload.name || payload.email || "Usuario");
-      } catch {
-        setUsername("Usuario");
-      }
-    } else {
-      setUsername("Usuario");
-    }
-  }, []);
-
-  const handleLogout = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      window.location.href = "/login";
-      return;
-    }
-    try {
-      const response = await fetch("/auth/logout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-      });
-      // Si el logout es exitoso o el token ya está invalidado, borra el token y redirige
-      if (response.status === 200 || response.status === 401) {
-        localStorage.removeItem("token");
-        window.location.href = "/login";
-      } else {
-        // Si hay otro error, puedes mostrar un mensaje o forzar logout
-        localStorage.removeItem("token");
-        window.location.href = "/login";
-      }
-    } catch (error) {
-      // En caso de error de red, borra el token y redirige
-      localStorage.removeItem("token");
-      window.location.href = "/login";
-    }
-  };
-
   return (
     <div className="dashboard-layout">
       <Header
-        username={username}
         onUserMenu={() => setMenuOpen((open) => !open)}
         menuOpen={menuOpen}
         handleLogout={handleLogout}
@@ -179,6 +136,8 @@ const UserDashboard: React.FC = () => {
                   currentPage={currentPage}
                   totalPages={totalPages}
                   onPageChange={setCurrentPage}
+                  totalItems={totalItems}
+                  totalLabel="Campos"
                 />
               </div>
             </>
@@ -189,5 +148,11 @@ const UserDashboard: React.FC = () => {
     </div>
   );
 };
+
+const UserDashboard: React.FC = () => (
+  <UserMenuProvider>
+    <UserDashboardContent />
+  </UserMenuProvider>
+);
 
 export default UserDashboard;
