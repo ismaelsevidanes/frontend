@@ -95,8 +95,7 @@ function Register() {
           <div className="register-benefits">
             <h4>Ventajas al Registrarte</h4>
             <ul>
-              <li>Lorem ipsum dolor sit amet consectetur</li>
-              <li>Lorem ipsum dolor sit amet consectetur</li>
+              <li>Facilidad de navegacion sin anuncios</li>
               <li>Puedes Crear un Perfil completamente Único</li>
               <li>¡Es Completamente gratis!</li>
             </ul>
