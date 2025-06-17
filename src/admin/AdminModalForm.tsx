@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import './AdminModalForm.css';
 
 interface AdminModalFormProps<T> {

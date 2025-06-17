@@ -18,7 +18,7 @@ const SummaryContent: React.FC = () => {
 
   useEffect(() => {
     // Intenta obtener los datos del ticket de location.state o sessionStorage
-    let ticketData = null;
+    let ticketData: any = null;
     if (location.state && (location.state as any).ticket) {
       ticketData = (location.state as any).ticket;
     } else {

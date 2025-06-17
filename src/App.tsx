@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import Home from './pages/Home';
+// import Home from './pages/Home'; // Eliminado porque no se usa
 import AdminDashboard from './pages/AdminDashboard';
 import Register from './pages/Register';
 import Login from './pages/Login';

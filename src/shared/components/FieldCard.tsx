@@ -51,8 +51,6 @@ const FieldCard: React.FC<FieldCardProps> = ({
   description,
   type,
   price_per_hour,
-  max_reservations,
-  available_spots,
   images = ["/logo.webp", "/logo.webp", "/logo.webp", "/logo.webp"],
   onReserve,
   hideReserveButton

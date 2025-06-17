@@ -1,5 +1,5 @@
 import React from "react";
-import './AdminTable.css';
+import './adminTable.css';
 
 interface AdminTableProps<T> {
   columns: { key: keyof T; label: string; render?: (row: T) => React.ReactNode }[];

@@ -30,7 +30,6 @@ const SLOTS = [
 
 const PaymentMethodContent = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { menuOpen, setMenuOpen, handleLogout } = useUserMenu();
   const [cardData, setCardData] = useState({
     number: "",
@@ -164,7 +163,7 @@ const PaymentMethodContent = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            cardNumber: cardData.number,
+            cardNumber: cardData.number.replace(/\s+/g, ""), // Elimina espacios
             expiry: cardData.expiry,
             cvc: cardData.cvc,
             cardName: cardData.name,
@@ -205,7 +204,7 @@ const PaymentMethodContent = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            cardNumber: cardData.number,
+            cardNumber: cardData.number.replace(/\s+/g, ""), // Elimina espacios
             expiry: cardData.expiry,
             cvc: cardData.cvc,
             cardName: cardData.name,
@@ -277,8 +276,7 @@ const PaymentMethodContent = () => {
   }, [savedCard, success]);
 
   // Handler para el botón de Confirmar reserva en el resumen
-  const handleOpenConfirmPayment = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
+  const handleOpenConfirmPayment = () => {
     if (!hasPaymentMethod) {
       setFormError("Debes añadir un método de pago antes de confirmar la reserva.");
       return;
@@ -303,7 +301,7 @@ const PaymentMethodContent = () => {
   };
 
   // Handler para confirmar el pago (llama a handleSubmit real y crea la reserva)
-  const handleConfirmPayment = async (e?: React.FormEvent) => {
+  const handleConfirmPayment = async () => {
     setShowConfirmPaymentModal(false);
     setFormError("");
     setSuccess("");
@@ -359,23 +357,20 @@ const PaymentMethodContent = () => {
         return;
       }
       // Obtener datos de la reserva creada para el ticket
-      let ticket = reservaPayload;
-      try {
-        ticket = await reservaRes.json();
-      } catch {}
-      // Añadir info extra para el ticket
-      ticket.slotLabel = slotLabel;
-      ticket.numUsers = reservaTemp.numUsers;
-      ticket.fieldName = fieldData?.name || reservaTemp.field_id;
-      ticket.fieldAddress = fieldData?.address || "";
-      ticket.date = reservaTemp.date;
-      // Corrige el precio unitario y el total
-      const precioUnitario = fieldData?.price || reservaTemp.price || fieldData?.price_per_hour || reservaTemp.price_per_hour || 0;
-      ticket.price = precioUnitario;
-      ticket.total_price = precioUnitario * ticket.numUsers;
-      // Añadir created_at y creator_id para el botón de cancelar
+      let ticket: any = await reservaRes.json();
+      // Reconstruir propiedades para el ticket si faltan
+      ticket.slotLabel = ticket.slotLabel || (SLOTS.find(s => s.id === Number(ticket.slot))?.label || ticket.slot);
+      ticket.numUsers = ticket.numUsers || reservaTemp.numUsers || reservaTemp.quantity;
+      ticket.fieldName = ticket.fieldName || fieldData?.name || reservaTemp.field_id;
+      ticket.fieldAddress = ticket.fieldAddress || fieldData?.address || "";
+      ticket.price = ticket.price || fieldData?.price || reservaTemp.price || fieldData?.price_per_hour || reservaTemp.price_per_hour || 0;
+      ticket.total_price = ticket.total_price || ((fieldData?.price || reservaTemp.price || fieldData?.price_per_hour || reservaTemp.price_per_hour || 0) * (reservaTemp.numUsers || reservaTemp.quantity || 1));
       ticket.created_at = ticket.created_at || new Date().toISOString();
-      ticket.creator_id = userId;
+      ticket.creator_id = ticket.creator_id || userId;
+      ticket.field_id = ticket.field_id || reservaPayload.field_id;
+      ticket.slot = ticket.slot || reservaPayload.slot;
+      ticket.user_ids = ticket.user_ids || reservaPayload.user_ids;
+      ticket.quantity = ticket.quantity || reservaPayload.quantity;
       sessionStorage.removeItem("reservaTemp");
       sessionStorage.setItem("lastTicket", JSON.stringify(ticket));
       setSuccess("Reserva y método de pago guardados correctamente");
@@ -393,7 +388,7 @@ const PaymentMethodContent = () => {
   return (
     <div className="dashboard-layout">
       <Header
-        onUserMenu={setMenuOpen}
+        onUserMenu={() => setMenuOpen((open: boolean) => !open)}
         menuOpen={menuOpen}
         handleLogout={handleLogout}
       >

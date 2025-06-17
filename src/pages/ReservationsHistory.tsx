@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../shared/components/Header";
 import Footer from "../shared/components/Footer";
 import { useUserMenu } from "../shared/components/UserMenuProvider";
@@ -21,6 +21,8 @@ interface Reservation {
   creator_id: number;
   status: string;
   quantity: number;
+  numUsers?: number;
+  slot?: number;
 }
 
 const PAGE_SIZE = 5;
@@ -39,7 +41,6 @@ const ReservationsHistory: React.FC = () => {
   const [precioMax, setPrecioMax] = useState("");
   const [ubicacion, setUbicacion] = useState("");
   const [localidad, setLocalidad] = useState("");
-  const [fecha, setFecha] = useState("");
   const [numReservasMin, setNumReservasMin] = useState("");
   const [numReservasMax, setNumReservasMax] = useState("");
   const [ordenarPorFecha, setOrdenarPorFecha] = useState(false);

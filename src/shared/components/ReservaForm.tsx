@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import dayjs from "dayjs";
 import "./ReservaForm.css";
-import { authFetch } from "../utils/authFetch";
 import { getAvailableSpots } from "../utils/getAvailableSpots";
 
 interface Field {
@@ -25,7 +23,7 @@ const SLOTS = [
   { id: 4, label: "13:30 - 15:00", start: "13:30", end: "15:00" },
 ];
 
-const ReservaForm: React.FC<ReservaFormProps> = ({ field, nextWeekendDates, onSuccess }) => {
+const ReservaForm: React.FC<ReservaFormProps> = ({ field, nextWeekendDates }) => {
   const [date, setDate] = useState<string>("");
   const [slot, setSlot] = useState<number | "">("");
   const [numUsers, setNumUsers] = useState(1);
@@ -42,15 +40,6 @@ const ReservaForm: React.FC<ReservaFormProps> = ({ field, nextWeekendDates, onSu
 
   const handleSlotClick = (slotId: number) => {
     setSlot(slotId);
-  };
-
-  const getSlotTimes = (date: string, slotId: number) => {
-    const slot = SLOTS.find(s => s.id === slotId);
-    if (!slot) return { start: '', end: '' };
-    // date: 'YYYY-MM-DD', slot.start: 'HH:mm', slot.end: 'HH:mm'
-    const start = `${date}T${slot.start}:00`;
-    const end = `${date}T${slot.end}:00`;
-    return { start, end };
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

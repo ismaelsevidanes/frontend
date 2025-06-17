@@ -20,16 +20,11 @@ const routeMap: Record<string, (params?: any) => Crumb[]> = {
   ],
   "/pago": () => [
     { label: "Inicio", to: "/dashboard" },
-    {/* Este no funciona*/},
-    {/* label: "Detalle del campo", to: "/reserva/:id" */},
     { label: "Detalle del campo", to: "/dashboard" },
     { label: "Método de pago", to: "" },
   ],
   "/summary": () => [
     { label: "Inicio", to: "/dashboard" },
-    {/* Estos dos no funcionan */},
-    {/*label: "Detalle del campo", to: "/reserva/:id" */},
-    {/* label: "Método de pago", to: "/pago" */},
     { label: "Detalle del campo", to: "/dashboard" },
     { label: "Método de pago", to: "/dashboard" },
     { label: "Resumen", to: "" },

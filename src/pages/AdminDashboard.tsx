@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import './dashboard.css';
 import Pagination from '../shared/components/Pagination';
-import { formatDate } from '../shared/utils/dateUtils';
 import { authFetch } from '../shared/utils/authFetch';
 import { useNavigate } from 'react-router-dom';
 import AdminSidebar from '../admin/AdminSidebar';
@@ -11,7 +10,14 @@ import AdminModal from '../admin/AdminModal';
 import { AdminProvider, useAdmin } from '../admin/AdminContext';
 
 // Configuración de modelos centralizada
-const MODELS = {
+const MODELS: Record<string, {
+  columns: any[];
+  formFields: any[];
+  endpoint: string;
+  title: string;
+  fetchUrl?: string;
+  readOnly?: boolean;
+}> = {
   users: {
     columns: [
       { key: 'id', label: 'ID' },
@@ -96,8 +102,6 @@ function AdminDashboardContent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalData, setModalData] = useState<any>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [error, setError] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const navigate = useNavigate();
@@ -144,7 +148,6 @@ function AdminDashboardContent() {
       setData(formattedData);
       setTotalPages(result.totalPages || 1);
     } catch (error) {
-      setError('Error al cargar datos');
       setData([]);
     }
   }, []);
@@ -198,7 +201,8 @@ function AdminDashboardContent() {
       if (!response.ok) throw new Error('Error al eliminar el registro');
       fetchData(selectedModel, currentPage);
     } catch (error) {
-      setError('Error al eliminar el registro');
+      setShowDeleteModal(false);
+      setDeleteId(null);
     } finally {
       setShowDeleteModal(false);
       setDeleteId(null);
@@ -213,7 +217,6 @@ function AdminDashboardContent() {
       const fields = MODELS[selectedModel].formFields;
       for (const field of fields) {
         if (field.required && !formData[field.key]) {
-          setError(`El campo '${field.label}' es obligatorio.`);
           return;
         }
       }
@@ -231,7 +234,6 @@ function AdminDashboardContent() {
           userIdsArr = formData.user_ids;
         }
         if (!userIdsArr.length) {
-          setError('Debes indicar al menos un ID de usuario válido.');
           return;
         }
         dataToSend.user_ids = userIdsArr;
@@ -251,7 +253,6 @@ function AdminDashboardContent() {
       fetchData(selectedModel, currentPage);
       handleCloseModal();
     } catch (error) {
-      setError('Error al guardar los datos');
     }
   };
 
@@ -345,7 +346,7 @@ function AdminDashboardContent() {
             }}
             initialValues={modalData || {}}
             fields={MODELS[selectedModel].formFields}
-            title={undefined} // Elimina el título interno del formulario
+            title={isEditing ? `Editar ${MODELS[selectedModel].title.slice(0, -1)}` : `Crear ${MODELS[selectedModel].title.slice(0, -1)}`}
           />
         </AdminModal>
       </main>
